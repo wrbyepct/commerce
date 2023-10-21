@@ -1,3 +1,8 @@
 body {
-    padding: 10px;
+  padding: 10px;
 }
+
+.required::before {
+  content: "*";
+  color: red;
+}/*# sourceMappingURL=styles.css.map */

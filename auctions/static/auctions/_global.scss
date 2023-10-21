@@ -1,0 +1,8 @@
+body {
+    padding: 10px;
+}
+
+.required::before {
+    content: "*";
+    color: red;
+}

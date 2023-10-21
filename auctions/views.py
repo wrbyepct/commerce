@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User
+from .forms import CustomUserCreationForm
 
 
 def index(request):
@@ -38,12 +39,16 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
+        
+        
         username = request.POST["username"]
         email = request.POST["email"]
+        birthday = request.POST["birthday"]
 
         # Ensure password matches confirmation
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
+        password = request.POST["password1"]
+        confirmation = request.POST["password2"]
+        
         if password != confirmation:
             return render(request, "auctions/register.html", {
                 "message": "Passwords must match."
@@ -51,13 +56,23 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, email, password)
+            user = User.objects.create_user(
+                username=username, 
+                email=email, 
+                password=password,
+            )
+            
+            user.birthday = None if birthday == "" else birthday
             user.save()
         except IntegrityError:
+            form = CustomUserCreationForm(request.POST)
             return render(request, "auctions/register.html", {
-                "message": "Username already taken."
+                "message": "Username already taken.",
+                "form": form
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
+   
     else:
-        return render(request, "auctions/register.html")
+        register_form = CustomUserCreationForm()
+        return render(request, "auctions/register.html", {"form": register_form })
