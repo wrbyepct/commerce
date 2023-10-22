@@ -39,12 +39,6 @@ Your password can’t be entirely numeric."""})
         required=False
     )
     
-    def clean_birthday(self):
-        birthday = self.cleaned_data["birthday"]
-        if birthday == "":
-            return None
-        return birthday
-    
     required_css_class = 'required'
     
     class Meta(UserCreationForm.Meta):
