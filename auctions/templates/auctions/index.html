@@ -1,7 +1,40 @@
 {% extends "auctions/layout.html" %}
 
+{% load static %}
+
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+                {{ message }}
+                                      <!-- BooStrap class and script -->
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container">
+        {% if listings %}
+            {% for listing in listings %}
+                <div class="listing">
+                    <div class="img-box">
+                        <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
+                        <img 
+                            src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
+                            alt="{{ listing.description }}"
+                            onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
+                        >
+                    </div>
+                    <div class="product-info">
+                        <h3>{{listing.title}}</h3>
+                        <h4>Price: ${{ listing.current_bid }}</h4>
+                        <span>Created {{listing.created_at}}</span>
+                    </div>
+                </div>
+            {% endfor %}    
+        {% endif %}
+    </div>
+    
 {% endblock %}

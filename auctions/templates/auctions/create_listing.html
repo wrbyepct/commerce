@@ -1,0 +1,44 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+
+{% block script %}
+    <script src="{% static 'script/create_listing.js' %}" defer></script>
+{% endblock %}
+
+{% block body %}
+
+    <h2>Post a new auction</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+                {{ message }}
+                                      <!-- BooStrap class and script -->
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+               
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    <form action="{% url 'create' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.title }}
+        {{ form.description}}
+        {{ form.current_bid }}
+        <div id="dropArea">
+            <div id="dragArea">
+                {{ form.image }}  <!-- Currently hidden -->
+                <!-- label with the image id will take up its function -->
+                <label id="imageLabel" for="{{ form.image.id_for_label }}">Upload Image</label>
+            </div>
+            <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width: 320px; height: 180px;">
+        </div>
+        
+        <input class="btn btn-primary" type="submit" value="Post">
+    </form>
+
+   
+
+{% endblock %}

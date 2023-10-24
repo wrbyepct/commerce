@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 
-from .models import User
+from .models import User, AuctionListing
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -54,5 +54,21 @@ Your password can’t be entirely numeric."""})
             })
     
         
+class NewListingForm(forms.ModelForm):
+
+    class Meta:
+        model = AuctionListing
+        fields = ['title', 'description', 'current_bid', 'image']
+        labels = {
+            'current_bid': 'Starting Bid'
+        }
+        widgets = {
+            'current_bid': forms.NumberInput(attrs={'min': '0.01'})
+        }
+       
         
+    def __init__(self, *args, **kwargs):
+        super(NewListingForm, self).__init__(*args, **kwargs)
+        self.fields['image'].required = False
+            
 
