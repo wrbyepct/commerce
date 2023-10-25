@@ -1,0 +1,74 @@
+{% extends 'auctions/layout.html' %}
+
+
+{% load static %}
+
+    
+{% block head %}
+    <script src="{% static 'script/listing.js' %}"></script> 
+    <meta name="csrf-token" content="{{ csrf_token }}">  
+{% endblock %}
+
+{% block body  %}
+    <div class="container">
+        {% if listing %}
+
+            <div class="listing">
+                <div class="img-box">
+                    <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
+                    <img 
+                        src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
+                        alt="{{ listing.description }}"
+                        onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
+                    >
+                </div>
+                <div class="product-info">
+                    <h3>{{listing.title}}</h3>
+                    <h4>Price: ${{ listing.current_bid }}</h4>
+                    <span>Category: {% if listing.category %}{{ listing.category }}{% else %} Uncategorized{% endif %}</span>
+                    <span>Created at: {{listing.created_at}}</span>
+                </div>
+            </div>
+
+        {% endif %}    
+    </div>
+    {% if user.is_authenticated %}
+        <div class="user-container">
+            <div class="bid-box">
+                <form action="{% url 'listing' listing.id %}" method="post">
+                    <input 
+                        type="number" 
+                        min="{{ minimal_bid }}" 
+                        step="0.01"
+                        value="{{ minimal_bid }}"
+                    >
+                    
+                    <button class="btn btn-primary" type="submit">Place bid</button>
+                </form>
+                
+            </div>
+            <div class="watch-box">
+                <button 
+                    id="watchlistBtn" 
+                    class="btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-dark{% endif %}" 
+                    type="submit" data-custom="{{ listing.id }}"
+                >
+                    {% if listing in user.watchlist.all %}Remove{% else %}Watchlist{% endif %}
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast body -->
+        <div class="toast-container position-absolute bottom-0 end-0 p-3">
+            <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto">Watchlist</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                Added to watchlist.
+              </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
+
+from decimal import Decimal
 
 from .models import User, AuctionListing, Bid
 from .forms import CustomUserCreationForm, NewListingForm
@@ -12,7 +14,7 @@ from .utils import print_normal_message, print_error_message
 
 def index(request):
     listings = AuctionListing.objects.all()
-    
+       
     return render(request, "auctions/index.html", {"listings": listings})
 
 
@@ -121,3 +123,37 @@ def create_listing(request):
     # return an empty form 
     
     return render(request, 'auctions/create_listing.html', {'form': form})
+
+
+def listing_page(request, item_id):
+    
+    # Handle GET method
+    listing = AuctionListing.objects.get(id=item_id)
+    
+    minimal_bid = listing.current_bid + Decimal('0.01')
+    
+    return render(request, 'auctions/listing.html', 
+                  {
+                      'listing': listing,
+                      'minimal_bid': minimal_bid
+                   })
+    
+    
+@login_required   
+def toggle_watchlist(request, listing_id):
+    
+    if request.method == "POST":
+        listing = AuctionListing.objects.get(id=listing_id)
+        user = request.user
+        
+        if listing not in user.watchlist.all():
+            user.watchlist.add(listing)
+            res = {'status': 'added', 
+                    'message': f"Added '{listing.title}' to watchlist"}
+        else:
+            user.watchlist.remove(listing)
+            res = {'status': 'removed', 
+                    'message': f"Removed '{listing.title}' from watchlist"}
+            
+        return JsonResponse(res)
+    

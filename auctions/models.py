@@ -6,6 +6,7 @@ import decimal
 class User(AbstractUser):
     """User model with additional birthday field."""
     birthday = models.DateField(null=True, blank=True)
+    watchlist = models.ManyToManyField('AuctionListing', blank=True, related_name='watchers')
     
     def __str__(self):
         return f"User info: Username: {self.username}, email: {self.email}, birthday: {self.birthday}"
@@ -14,7 +15,7 @@ class User(AbstractUser):
 class AuctionListing(models.Model):
     """Model for auction listings."""
     poster = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_listings")
-    
+   
     title = models.CharField(max_length=255)
     description = models.TextField()
     current_bid = models.DecimalField(
@@ -23,6 +24,7 @@ class AuctionListing(models.Model):
         null=True,
         validators=[MinValueValidator(decimal.Decimal('0.01'))]
     )
+    category = models.CharField(max_length=255, null=True, blank=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     
     STATUS_CHOICES = (

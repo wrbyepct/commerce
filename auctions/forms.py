@@ -55,10 +55,10 @@ Your password can’t be entirely numeric."""})
     
         
 class NewListingForm(forms.ModelForm):
-
+    
     class Meta:
         model = AuctionListing
-        fields = ['title', 'description', 'current_bid', 'image']
+        fields = ['title', 'description', 'current_bid', 'category', 'image']
         labels = {
             'current_bid': 'Starting Bid'
         }
@@ -70,5 +70,7 @@ class NewListingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(NewListingForm, self).__init__(*args, **kwargs)
         self.fields['image'].required = False
+        self.fields['category'].required = False
+        
             
 

@@ -3,7 +3,7 @@
 {% load static %}
 
 
-{% block script %}
+{% block head %}
     <script src="{% static 'script/create_listing.js' %}" defer></script>
 {% endblock %}
 
@@ -24,8 +24,16 @@
     
     <form action="{% url 'create' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        {{ form.title.label_tag }}
         {{ form.title }}
-        {{ form.description}}
+
+        {{ form.description.label_tag }}
+        {{ form.description }}
+
+        {{ form.category.label_tag }}
+        {{ form.category }}
+
+        {{ form.current_bid.label_tag }}
         {{ form.current_bid }}
         <div id="dropArea">
             <div id="dragArea">
