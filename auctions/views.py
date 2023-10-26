@@ -156,4 +156,8 @@ def toggle_watchlist(request, listing_id):
                     'message': f"Removed '{listing.title}' from watchlist"}
             
         return JsonResponse(res)
-    
+
+
+def watchlist(request): 
+    user = request.user
+    return render(request, 'auctions/watchlist.html', {'watchlist': user.watchlist.all()})    

@@ -26,6 +26,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
         .then(response => response.json())
         .then(data => {
 
+            // This is for immediate change effect
+            if (data.status === "added") {
+                watchlistBtn.classList.add('btn-danger')
+                watchlistBtn.classList.remove('btn-dark')
+                watchlistBtn.textContent = 'Remove'
+            } else {
+                watchlistBtn.classList.add('btn-dark')
+                watchlistBtn.classList.remove('btn-danger')
+                watchlistBtn.textContent = 'Watchlist'
+            }
             toastBody.textContent = data.message;
             toastListing.show();
         })

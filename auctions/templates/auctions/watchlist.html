@@ -1,0 +1,33 @@
+{% extends 'auctions/layout.html' %}
+
+{% load static %}
+
+{% block body %}
+    <div class="container">
+        {% if watchlist %}
+            {% for listing in watchlist %}
+                
+                <div class="listing">
+                    <a href="{% url 'listing' listing.id %}">
+
+                        <div class="img-box">
+                            <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
+                            <img 
+                                src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
+                                alt="{{ listing.description }}"
+                                onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
+                            >
+                        </div>
+                        <div class="product-info">
+                            <h3>{{listing.title}}</h3>
+                            <h4>Price: ${{ listing.current_bid }}</h4>
+                            <span>Created {{listing.created_at}}</span>
+                        </div>
+
+                    </a>
+                </div>
+                
+            {% endfor %}    
+        {% endif %}
+    </div>
+{% endblock %}
