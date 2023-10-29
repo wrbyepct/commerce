@@ -1,4 +1,10 @@
 
+import re
+
+def only_contains_words(string):
+    pattern = re.compile(r"[a-z]+", flags=re.IGNORECASE)
+    match = pattern.fullmatch(string=string)
+    return True if match else False 
 
 
 def print_normal_message(obj_text):

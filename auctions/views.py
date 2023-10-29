@@ -9,16 +9,15 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 
 # For return response 
-from django.http import  HttpResponseRedirect, JsonResponse, HttpResponseForbidden, Http404
+from django.http import  HttpResponseRedirect, JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from django.core.signing import Signer
 
 from decimal import Decimal
 from .models import User, AuctionListing, Bid, Category
 from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm
-from .utils import print_normal_message, print_error_message
+from .utils import print_normal_message, print_error_message, only_contains_words
 
 def index(request):
     listings = AuctionListing.objects.filter(status='open').order_by('-updated_at')
@@ -96,6 +95,18 @@ def register(request):
 def create_listing(request):
     
     if request.method == 'POST':
+        """
+        Conditions:
+            Reuired:
+                1. title
+                2. description
+                3. user
+                4. 
+            Optional:
+            4. image(optional, nullable)
+            5. 
+        
+        """
         
         form = NewListingForm(request.POST, request.FILES)
         # *title *description *category *bid
@@ -106,12 +117,19 @@ def create_listing(request):
             listing = form.save(commit=False)
             # Saving title, description, image
             
-            # Check new category 
-            new_cate =form.cleaned_data.get('new_category').lower()
+            # Check new category, if user enters it
+            new_cate =form.cleaned_data.get('new_category').lower().strip()
+
+            
             if new_cate != "" and new_cate is not None:
-                category = Category.objects.create(name=new_cate)
+                if not only_contains_words(new_cate):
+                    messages.error(request, "Invalid category name: Please enter only English word and not with white space.")
+                    return render(request, 'auctions/create_listing.html', {'form': form})
+                else:
+                    category = Category.objects.create(name=new_cate)
             
             else: 
+                # Or use the one selected by the user
                 category = form.cleaned_data.get('category')            
             
             # Save category

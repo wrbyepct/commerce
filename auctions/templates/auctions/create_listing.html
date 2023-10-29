@@ -13,7 +13,7 @@
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
                 {{ message }}
                                       <!-- BooStrap class and script -->
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
