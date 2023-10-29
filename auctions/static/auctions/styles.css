@@ -7,6 +7,15 @@ body {
   color: red;
 }
 
+.no-show {
+  display: none;
+}
+
+.alert-error {
+  background: rgba(226, 34, 120, 0.788);
+  border: 1px solid rgb(133, 10, 34);
+}
+
 #dropArea {
   border: 1px solid black;
   width: 320px;
@@ -34,4 +43,18 @@ input#id_image {
 .img-box img {
   width: 100%;
   height: 100%;
+}
+
+.nav-watchlist {
+  position: relative;
+}
+.nav-watchlist .watchlist-counter {
+  position: absolute;
+  right: -0.15%;
+  top: 50%;
+  font-size: 10px;
+  background: rgb(229, 81, 81);
+  color: white;
+  padding: 1px 4px;
+  border-radius: 15%;
 }/*# sourceMappingURL=styles.css.map */

@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import MinValueValidator
 
-from .models import User, AuctionListing
+import decimal
+from .models import User, AuctionListing, Category
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -55,15 +57,28 @@ Your password can’t be entirely numeric."""})
     
         
 class NewListingForm(forms.ModelForm):
+    starting_bid = forms.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        validators=[MinValueValidator(decimal.Decimal('0.01'))]
+    )
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        initial=Category.objects.get(id=1),
+        label="Choose a category"
+    )
+    
+    new_category = forms.CharField(
+        max_length=255, 
+        required=False,
+        label="Or create a new category"
+    )
     
     class Meta:
         model = AuctionListing
-        fields = ['title', 'description', 'current_bid', 'category', 'image']
-        labels = {
-            'current_bid': 'Starting Bid'
-        }
+        fields = ['title', 'description', 'starting_bid', 'image']
         widgets = {
-            'current_bid': forms.NumberInput(attrs={'min': '0.01'})
+            'current_bid': forms.NumberInput(attrs={'min': '0.01', 'step': 0.01})
         }
        
         
@@ -74,3 +89,5 @@ class NewListingForm(forms.ModelForm):
         
             
 
+class PlaceBidForm(forms.Form):
+    bid_input = forms.DecimalField(min_value=0.01, decimal_places=2)

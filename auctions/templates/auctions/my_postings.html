@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>My Postings</h2>
 
     {% if messages %}
         {% for message in messages %}
@@ -33,6 +33,7 @@
                         <div class="product-info">
                             <h3>{{listing.title}}</h3>
                             <h4>Price: ${{ listing.current_bid.price }}</h4>
+                            <h5>Status: {{ listing.status }}</h5>
                             <span>Created {{listing.created_at}}</span>
                         </div>
 

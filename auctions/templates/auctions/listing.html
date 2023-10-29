@@ -10,6 +10,17 @@
 {% endblock %}
 
 {% block body  %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+                {{ message }}
+                                    <!-- BooStrap class and script -->
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="container">
         {% if listing %}
 
@@ -24,26 +35,41 @@
                 </div>
                 <div class="product-info">
                     <h3>{{listing.title}}</h3>
-                    <h4>Price: ${{ listing.current_bid }}</h4>
-                    <span>Category: {% if listing.category %}{{ listing.category }}{% else %} Uncategorized{% endif %}</span>
-                    <span>Created at: {{listing.created_at}}</span>
+                    <h4 >Price: ${{ listing.current_bid.price }}</h4>
+                    <h5 class="status">Status: {{ listing.get_status_display }}</h5>
+                    <div>Category: {% if listing.category %}{{ listing.category }}{% else %} Uncategorized{% endif %}</div>
+                    <div>Created at: {{listing.created_at}}</div>
+                    {% if listing.created_at != listing.updated_at %}
+                        <div>Updated at: {{listing.updated_at}}</div>
+                    {% endif %}
+                    <div>Posted by: {{listing.poster.username}}</div>
                 </div>
             </div>
 
         {% endif %}    
     </div>
-    {% if user.is_authenticated %}
+    <!-- User only: 1. Place Bid 2. watchlist  -->
+    {% if user.is_authenticated and listing.poster != user %}
         <div class="user-container">
             <div class="bid-box">
-                <form action="{% url 'listing' listing.id %}" method="post">
+                <form action="{% url 'place_bid' %}" method="post">
+                    {% csrf_token %}
                     <input 
+                        id="bidInput"
                         type="number" 
                         min="{{ minimal_bid }}" 
                         step="0.01"
+                        name="bid_input"
                         value="{{ minimal_bid }}"
+                        required
                     >
-                    
-                    <button class="btn btn-primary" type="submit">Place bid</button>
+                    <button 
+                        id="placeBid" 
+                        class="btn btn-primary" 
+                        type="submit" 
+                    >
+                        Place bid
+                    </button>
                 </form>
                 
             </div>
@@ -51,24 +77,36 @@
                 <button 
                     id="watchlistBtn" 
                     class="btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-dark{% endif %}" 
-                    type="submit" data-custom="{{ listing.id }}"
+                    type="submit"
                 >
                     {% if listing in user.watchlist.all %}Remove{% else %}Watchlist{% endif %}
                 </button>
             </div>
         </div>
 
+
         <!-- Toast body -->
         <div class="toast-container position-absolute bottom-0 end-0 p-3">
             <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-              <!-- <div class="toast-header">
-                <strong class="me-auto">Watchlist</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div> -->
               <div class="toast-body">
                 Added to watchlist.
               </div>
             </div>
         </div>
     {% endif %}
+
+        <!-- close auction button -->
+    {% if user.id == listing.poster.id and listing.status == 'open' %}
+        <form action="{% url 'close_auction' %}" method="post">
+            {% csrf_token %}
+            <input type="number" name="listing_id" value="{{ signed_listing_id }}" hidden readonly>
+            <button class="btn btn-primary" type="submit">Close acution</button>
+        </form>
+    {% endif %}
+
+    {% if listing.winner %}
+        <div class="winner-container">
+            <span>Winner of the bid: {{ listing.winner.username }} </span>
+        </div>
+    {% endif%}
 {% endblock %}

@@ -24,22 +24,39 @@
     
     <form action="{% url 'create' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.title.label_tag }}
-        {{ form.title }}
-
-        {{ form.description.label_tag }}
-        {{ form.description }}
-
-        {{ form.category.label_tag }}
-        {{ form.category }}
-
-        {{ form.current_bid.label_tag }}
-        {{ form.current_bid }}
+        <div class="form-field">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+        </div>
+        <div class="form-field">
+            <div>
+                {{ form.description.label_tag }}
+            </div>
+            {{ form.description }}
+        </div>
+        <div class="form-field">
+            {{ form.starting_bid.label_tag }}
+            {{ form.starting_bid }}
+        </div>
+        <div>
+            <h4>Opetional:</h4>
+        </div>
+        <div class="form-field">
+            {{ form.category.label_tag }}
+            {{ form.category }}
+        </div>
+        <div class="form-field">
+            {{ form.new_category.label_tag }}
+            {{ form.new_category }}
+        </div>
+        
         <div id="dropArea">
             <div id="dragArea">
                 {{ form.image }}  <!-- Currently hidden -->
                 <!-- label with the image id will take up its function -->
-                <label id="imageLabel" for="{{ form.image.id_for_label }}">Upload Image</label>
+                <label id="imageLabel" for="{{ form.image.id_for_label }}">
+                    <span>Upload Image</span>
+                </label>
             </div>
             <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width: 320px; height: 180px;">
         </div>

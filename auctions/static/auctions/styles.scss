@@ -12,3 +12,23 @@
         height: 100%;
     }
 }
+
+.nav-watchlist {
+    position: relative;
+    .watchlist-counter {
+        position: absolute;
+        right: -0.15%;
+        top: 50%;
+
+        font-size: 10px;
+        background: rgb(229, 81, 81);
+        color: white;
+
+        padding: 1px 4px;
+
+        border-radius: 15%;
+        
+    
+      
+    }
+}

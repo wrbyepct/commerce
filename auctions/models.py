@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MinValueValidator
 import decimal
+from .utils import integrity_check
 
 class User(AbstractUser):
     """User model with additional birthday field."""
@@ -12,19 +13,25 @@ class User(AbstractUser):
         return f"User info: Username: {self.username}, email: {self.email}, birthday: {self.birthday}"
     
 
+class Category(models.Model):
+    name = models.CharField(max_length=255, default="other")
+    
+    def __str__(self):
+        return self.name
+
+
 class AuctionListing(models.Model):
     """Model for auction listings."""
-    poster = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_listings")
-   
+    poster = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
+    
+    winner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    
     title = models.CharField(max_length=255)
     description = models.TextField()
-    current_bid = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        null=True,
-        validators=[MinValueValidator(decimal.Decimal('0.01'))]
-    )
-    category = models.CharField(max_length=255, null=True, blank=True)
+    category = models.ForeignKey(Category, related_name="listings", on_delete=models.SET_DEFAULT, default=1) # default is 'other' category
+
+    current_bid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.SET_NULL)
+   
     image = models.ImageField(upload_to='images/', null=True, blank=True)
     
     STATUS_CHOICES = (
@@ -37,19 +44,24 @@ class AuctionListing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    class Medta:
-        unique_together = ('poster', 'title')
-    
     def __str__(self):
         return f"User {self.poster.username} opened an auction on item: {self.title} at {self.created_at}"
-
+    
+    @integrity_check
+    def save(self, *args, **kwargs):
+        super().save( *args, **kwargs)
+    
+    class Meta:
+        unique_together = ('poster', 'title', 'category')
+    
+    
 
 class Bid(models.Model):
     """Model for bids on auction listings."""
     auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="all_bids")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="all_bids")
     
-    bid = models.DecimalField(
+    price = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
         validators=[MinValueValidator(decimal.Decimal('0.01'))]
@@ -58,9 +70,11 @@ class Bid(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"User {self.user.username} placed a new bid ${self.bid} on item: {self.auction_listing.title} at \
+        return f"User {self.user.username} placed a new bid ${self.price} on item: {self.auction_listing.title} at \
 {self.created_at}"
     
+    
+
     
 class Comment(models.Model):
     """Model for comments on auction listings."""

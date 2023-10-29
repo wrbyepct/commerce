@@ -24,13 +24,27 @@
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    <a class="nav-link" href="{% url 'categories' %}">Categories</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+                    <a class="nav-link nav-watchlist" href="{% url 'watchlist' %}">Watchlist 
+                        
+                        <span 
+                            id="watchlist-counter" 
+                            class="watchlist-counter {% if user.watchlist.count == 0 %}no-show{% endif %}">
+                            {{ user.watchlist.count }}
+                        </span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'my_postings' %}">My Postings</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'create' %}">Create New Listing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>
             {% else %}
                 <li class="nav-item">
