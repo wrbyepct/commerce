@@ -1,10 +1,12 @@
 from django import forms
+from django.db import IntegrityError
 from django.contrib.auth.forms import UserCreationForm
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 
 import decimal
-from .models import User, AuctionListing, Category
-
+from .models import User, AuctionListing, Category, Bid
+from .utils import only_contains_word_or_empty_string
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
@@ -57,15 +59,15 @@ Your password can’t be entirely numeric."""})
     
         
 class NewListingForm(forms.ModelForm):
+    class Meta:
+        model = AuctionListing
+        fields = ['title', 'description', 'image']
+    
     starting_bid = forms.DecimalField(
         max_digits=10, 
         decimal_places=2,
+        widget=forms.NumberInput(attrs={'min': 0.01, 'step': 0.01}),
         validators=[MinValueValidator(decimal.Decimal('0.01'))]
-    )
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.all(),
-        initial=Category.objects.get(id=1),
-        label="Choose a category"
     )
     
     new_category = forms.CharField(
@@ -74,12 +76,30 @@ class NewListingForm(forms.ModelForm):
         label="Or create a new category"
     )
     
-    class Meta:
-        model = AuctionListing
-        fields = ['title', 'description', 'starting_bid', 'image']
-        widgets = {
-            'current_bid': forms.NumberInput(attrs={'min': '0.01', 'step': 0.01})
-        }
+    category = forms.ModelChoiceField(
+        # This automatically check for valid choice
+        queryset=Category.objects.all(),
+        initial=Category.objects.get(id=1),
+        label="Choose a category"
+    )
+    
+ 
+    def clean_category(self):
+        # Check for valid new cate
+        new_cate = self.cleaned_data['new_category'].lower().strip()
+        if not only_contains_word_or_empty_string(new_cate):
+            raise ValidationError('The category must only contain alphabetic characters without space.')
+        
+        # Check if the name has already existed
+        if new_cate != "":
+            try:
+                category = Category(name=new_cate)
+                category.save()
+                return category
+            except IntegrityError:
+                raise ValidationError("Category with this name already exists.")
+           
+        return self.cleaned_data['category']
        
         
     def __init__(self, *args, **kwargs):
@@ -89,5 +109,37 @@ class NewListingForm(forms.ModelForm):
         
             
 
-class PlaceBidForm(forms.Form):
-    bid_input = forms.DecimalField(min_value=0.01, decimal_places=2)
+class PlaceBidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['price']
+        
+        widgets = {
+            'price': forms.NumberInput(attrs={
+                'id': 'bidInput',
+                'step': 0.01,
+            })
+        }
+    
+    def __init__(self, *args, **kwargs):
+        custom_min_value = kwargs.pop('custom_min_value', None)
+        super(PlaceBidForm, self).__init__(*args, **kwargs)
+        if custom_min_value:
+            self.fields['price'].widget.attrs['min'] = custom_min_value
+            self.fields['price'].widget.attrs['value'] = custom_min_value
+    
+    def clean_price(self):
+        # Prevent user tamper with frontend fields
+        custom_min_value = self.fields['price'].widget.attrs['min']
+        user_input_value = self.cleaned_data['price']
+        
+        if user_input_value < custom_min_value:
+            raise ValidationError('Your bid should be higher than current price')
+        
+        return user_input_value
+   
+    
+
+# class CommentForm(forms.ModelForm):
+#     class Meta:
+#         model = 

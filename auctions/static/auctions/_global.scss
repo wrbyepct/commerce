@@ -10,3 +10,10 @@ body {
 .no-show {
     display: none;
 }
+
+.flex-box {
+    display: flex;
+    &--listing-owner-box {
+        justify-content: flex-end;
+    }
+}

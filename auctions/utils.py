@@ -1,11 +1,12 @@
 
 import re
 
-def only_contains_words(string):
-    pattern = re.compile(r"[a-z]+", flags=re.IGNORECASE)
-    match = pattern.fullmatch(string=string)
-    return True if match else False 
 
+def only_contains_word_or_empty_string(string):
+    pattern = re.compile(r"[a-z]*", flags=re.IGNORECASE)
+    match = pattern.fullmatch(string=string)
+    return True if match else False
+        
 
 def print_normal_message(obj_text):
     print('################')
@@ -38,7 +39,7 @@ def create_default_category(sender, **kargs):
     from .models import Category
     
     try:
-        Category.objects.get_or_create()
+        Category.objects.get_or_create(name='other')
     except InterruptedError:
         pass
     

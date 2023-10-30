@@ -14,7 +14,7 @@ class User(AbstractUser):
     
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, default="other")
+    name = models.CharField(max_length=255, unique=True) # Ensure name of the instance is unique
     
     def __str__(self):
         return self.name
@@ -37,7 +37,7 @@ class AuctionListing(models.Model):
     STATUS_CHOICES = (
         ('open', 'Open'),
         ('closed', 'Closed'),
-        ('canceled', 'Canceled'),
+        ('cancelled', 'Cancelled'),
     )
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='open')
     
@@ -45,7 +45,10 @@ class AuctionListing(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return f"User {self.poster.username} opened an auction on item: {self.title} at {self.created_at}"
+        return f"""User {self.poster.username} opened an auction on item: {self.title} at {self.created_at}
+Cateogry: {self.category.name}   
+
+"""
     
     @integrity_check
     def save(self, *args, **kwargs):
@@ -53,7 +56,6 @@ class AuctionListing(models.Model):
     
     class Meta:
         unique_together = ('poster', 'title', 'category')
-    
     
 
 class Bid(models.Model):
@@ -74,13 +76,11 @@ class Bid(models.Model):
 {self.created_at}"
     
     
-
-    
 class Comment(models.Model):
     """Model for comments on auction listings."""
     auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="comments")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    text = models.TextField()
+    text = models.TextField(max_length=1024)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -11,6 +11,13 @@ body {
   display: none;
 }
 
+.flex-box {
+  display: flex;
+}
+.flex-box--listing-owner-box {
+  justify-content: flex-end;
+}
+
 #dropArea {
   border: 1px solid black;
   width: 320px;

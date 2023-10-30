@@ -16,7 +16,8 @@ urlpatterns = [
     path('categories', views.categories, name="categories"),
     path('place_bid', views.place_bid, name='place_bid'),
     path('toggle_watchlist', views.toggle_watchlist, name='toggle_watchlist'),
-    path('close_auction', views.close_auction, name="close_auction")
+    path('close_auction', views.close_auction, name="close_auction"),
+    path('cancel_auction', views.cancel_auction, name="cancel_auction")
 ]
 
 if settings.DEBUG:

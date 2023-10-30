@@ -21,6 +21,26 @@
         {% endfor %}
     {% endif %}
 
+    
+        <!-- close auction button -->
+    {% if user.id == listing.poster.id and listing.status == 'open' %}
+        <div id="listing-owner-container" class="flex-box flex-box--listing-owner-box">
+            <form action="{% url 'close_auction' %}" method="post">
+                {% csrf_token %}
+                
+                <button class="btn btn-primary" type="submit">Close acution</button>
+            </form>
+
+            <form action="{% url 'cancel_auction' %}" method="post">
+                {% csrf_token %}
+                
+                <button class="btn btn-danger" type="submit">Cancel acution</button>
+            </form>
+
+        </div>
+        
+    {% endif %}
+
     <div class="container">
         {% if listing %}
 
@@ -54,15 +74,7 @@
             <div class="bid-box">
                 <form action="{% url 'place_bid' %}" method="post">
                     {% csrf_token %}
-                    <input 
-                        id="bidInput"
-                        type="number" 
-                        min="{{ minimal_bid }}" 
-                        step="0.01"
-                        name="bid_input"
-                        value="{{ minimal_bid }}"
-                        required
-                    >
+                    {{ place_bid_form.price }}
                     <button 
                         id="placeBid" 
                         class="btn btn-primary" 
@@ -84,6 +96,7 @@
             </div>
         </div>
 
+        
 
         <!-- Toast body -->
         <div class="toast-container position-absolute bottom-0 end-0 p-3">
@@ -94,15 +107,26 @@
             </div>
         </div>
     {% endif %}
-
-        <!-- close auction button -->
-    {% if user.id == listing.poster.id and listing.status == 'open' %}
-        <form action="{% url 'close_auction' %}" method="post">
-            {% csrf_token %}
-            <input type="number" name="listing_id" value="{{ signed_listing_id }}" hidden readonly>
-            <button class="btn btn-primary" type="submit">Close acution</button>
-        </form>
-    {% endif %}
+    
+    <div class="comment-section">
+        <div class="comment-section--header">
+            <h2>Comments {{ commnets.count }}</h2>
+        </div>
+        <div class="comment-section--leave-commnet">
+            
+        </div>
+        {% if comments %}
+            <div class="commnet-section--container">
+                {% for comment in commnets %}
+                    <div class="comment-section--body">
+                        <div>{{ comment.user }}</div>
+                        <div>{{ comment.text }}</div>
+                        <div>{% if comment.edited %}Edited{% endif %} {{ comment.updated_at }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 
     {% if listing.winner %}
         <div class="winner-container">

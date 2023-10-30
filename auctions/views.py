@@ -17,7 +17,7 @@ from django.urls import reverse
 from decimal import Decimal
 from .models import User, AuctionListing, Bid, Category
 from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm
-from .utils import print_normal_message, print_error_message, only_contains_words
+from .utils import print_normal_message, print_error_message
 
 def index(request):
     listings = AuctionListing.objects.filter(status='open').order_by('-updated_at')
@@ -97,71 +97,52 @@ def create_listing(request):
     if request.method == 'POST':
         """
         Conditions:
-            Reuired:
-                1. title
-                2. description
-                3. user
-                4. 
-            Optional:
-            4. image(optional, nullable)
-            5. 
-        
+            Required:
+                1. title(text, 255↓) => Handle 
+                2. description(text)
+                3. user(User instance)
+                4. category(Category instance): existing one, 
+                Optional:
+                    1. image(nullable)
+            Actions:
+                1. Save new listing 
         """
-        
         form = NewListingForm(request.POST, request.FILES)
-        # *title *description *category *bid
-        # optional: 
+        
         if form.is_valid():
+            category = form.cleaned_data['category']
             
-            # Create instance from form
             listing = form.save(commit=False)
-            # Saving title, description, image
             
-            # Check new category, if user enters it
-            new_cate =form.cleaned_data.get('new_category').lower().strip()
-
-            
-            if new_cate != "" and new_cate is not None:
-                if not only_contains_words(new_cate):
-                    messages.error(request, "Invalid category name: Please enter only English word and not with white space.")
-                    return render(request, 'auctions/create_listing.html', {'form': form})
-                else:
-                    category = Category.objects.create(name=new_cate)
-            
-            else: 
-                # Or use the one selected by the user
-                category = form.cleaned_data.get('category')            
-            
-            # Save category
             listing.category = category
             
-            # Save user 
-            listing.poster = request.user 
-            
-            # Save listing while checking for integrity error
-            res = listing.save(message="You have created the a listing with the same title and category. Please ensure they are unique")
+            user = request.user
+            # Save posting user
+            listing.poster = user
+            # Save listing while checking for integrity error(title, poster, category has to be unique)
+            res = listing.save(message="You have created a listing with the same title and category. Please ensure they are unique")
             
             if res['status'] == 'failed':
                 messages.error(request, res['message'])  
             
             else:    
-               
-                # Create bid 
+    
+                # Create & save bid 
                 bid = Bid.objects.create(
                     auction_listing=listing,
-                    price=form.cleaned_data.get('starting_bid'),
+                    price=form.cleaned_data['starting_bid'],
                     user=request.user
                 )
-                
                 listing.current_bid = bid
+
                 
-                res = listing.save()
+                listing.save()
                 messages.success(request=request, message="Listing posted successfully!")
                 return redirect('index')
             
         else:
             # Handle form's invalid
-             ## Access the error messages 
+            ## Access the error messages 
             error_messages = form.errors.as_text()
             messages.error(request, error_messages)
             
@@ -193,10 +174,9 @@ def watchlist(request):
 def my_postings(request):
     user_id = request.user.id
     
-    listings = AuctionListing.objects.filter(poster=user_id)
+    listings = AuctionListing.objects.filter(poster=user_id).order_by('-updated_at')
     return render(request, 'auctions/my_postings.html', {'listings': listings})
     
-
 
 def listing_page(request, listing_id):
     if request.user.is_authenticated:
@@ -206,14 +186,14 @@ def listing_page(request, listing_id):
     
     # Provide minimal bid
     minimal_bid = listing.current_bid.price + Decimal('0.01')
-    
+    place_bid_form = PlaceBidForm(custom_min_value=minimal_bid)
 
     return render(
         request, 
         'auctions/listing.html', 
         {
             'listing': listing,
-            'minimal_bid': minimal_bid
+            'place_bid_form': place_bid_form
         })
     
 
@@ -227,17 +207,14 @@ def place_bid(request):
         if listing_id is None:
             return HttpResponseForbidden("listing ID has lost")
         
-        form = PlaceBidForm(request.POST)
+        listing = AuctionListing.objects.get(id=listing_id)
+        
+        minimal_bid = listing.current_bid.price + Decimal('0.01')
+        form = PlaceBidForm(request.POST, custom_min_value=minimal_bid)
         
         if form.is_valid(): 
             
-            bid = form.cleaned_data['bid_input']
-            listing = AuctionListing.objects.get(id=listing_id)
-            
-            # Check submitted higher than currect bid
-            if bid <= listing.current_bid.price:
-                messages.error(request, "Invalid input. Your bid should be higher than current price")
-                return redirect(reverse('listing', args=[listing_id]))
+            bid = form.cleaned_data['price']
             
             # Save the new bid 
             new_bid = Bid.objects.create(
@@ -285,6 +262,14 @@ def toggle_watchlist(request):
 
 @login_required
 def close_auction(request):
+    """
+    Required: 
+        1. current listing 
+        2. highest bid user 
+    Action:
+        1. Update listing winner 
+        2. Update listing status
+    """
     if request.method == 'POST':
         
         listing_id = request.session.get('current_page_listing')
@@ -294,10 +279,8 @@ def close_auction(request):
         listing = AuctionListing.objects.get(id=listing_id)
         
         highest_bid = Bid.objects.filter(auction_listing=listing_id).order_by('-price').first()
-        print(f"The highest bid of the listing: {listing.title}")
-        print_normal_message(highest_bid)
+       
         winner = highest_bid.user
-        print(f"The winner of the bid: {winner}")
         
         listing.winner = winner 
         listing.status = 'closed'
@@ -305,3 +288,20 @@ def close_auction(request):
         listing.save()
         
         return redirect(reverse('listing', args=[listing_id]))
+
+@login_required
+def cancel_auction(request):
+    """
+    Required:
+        1. Current page lisitng 
+    """
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        return HttpResponseForbidden('Listing ID is somehow None')
+    
+    listing = AuctionListing.objects.get(id=listing_id)
+    
+    listing.status = 'cancelled'
+    listing.save()
+    
+    return redirect(reverse('listing', args=[listing_id]))
