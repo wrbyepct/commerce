@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 
 import decimal
-from .models import User, AuctionListing, Category, Bid
+from .models import User, AuctionListing, Category, Bid, Comment
 from .utils import only_contains_word_or_empty_string
 
 class CustomUserCreationForm(UserCreationForm):
@@ -98,7 +98,8 @@ class NewListingForm(forms.ModelForm):
                 return category
             except IntegrityError:
                 raise ValidationError("Category with this name already exists.")
-           
+        
+        # If new cate is emptry, then return selected value   
         return self.cleaned_data['category']
        
         
@@ -121,6 +122,7 @@ class PlaceBidForm(forms.ModelForm):
             })
         }
     
+    
     def __init__(self, *args, **kwargs):
         custom_min_value = kwargs.pop('custom_min_value', None)
         super(PlaceBidForm, self).__init__(*args, **kwargs)
@@ -129,7 +131,7 @@ class PlaceBidForm(forms.ModelForm):
             self.fields['price'].widget.attrs['value'] = custom_min_value
     
     def clean_price(self):
-        # Prevent user tamper with frontend fields
+        # Prevent user from tampering with frontend fields
         custom_min_value = self.fields['price'].widget.attrs['min']
         user_input_value = self.cleaned_data['price']
         
@@ -139,7 +141,14 @@ class PlaceBidForm(forms.ModelForm):
         return user_input_value
    
     
-
-# class CommentForm(forms.ModelForm):
-#     class Meta:
-#         model = 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': "Leave a Commnet...",
+                'style': 'resize: none;'
+            })
+        }

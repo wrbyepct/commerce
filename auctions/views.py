@@ -3,21 +3,24 @@ from django.contrib import messages
 
 # For authentication 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.views.decorators.http import require_POST
 
 # For saving instance to model 
 from django.db import IntegrityError
 
 # For return response 
 from django.http import  HttpResponseRedirect, JsonResponse, HttpResponseForbidden
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 
 from decimal import Decimal
-from .models import User, AuctionListing, Bid, Category
-from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm
+from .models import User, AuctionListing, Bid, Category, Comment
+from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm, CommentForm
 from .utils import print_normal_message, print_error_message
+
+from .constants import *
 
 def index(request):
     listings = AuctionListing.objects.filter(status='open').order_by('-updated_at')
@@ -120,7 +123,7 @@ def create_listing(request):
             # Save posting user
             listing.poster = user
             # Save listing while checking for integrity error(title, poster, category has to be unique)
-            res = listing.save(message="You have created a listing with the same title and category. Please ensure they are unique")
+            res = listing.save(failed_message=LISTING_NOT_UNIQUE)
             
             if res['status'] == 'failed':
                 messages.error(request, res['message'])  
@@ -179,21 +182,39 @@ def my_postings(request):
     
 
 def listing_page(request, listing_id):
+    """
+    Actions:
+        1. Save current page listing id where the user is currently at.
+        2. Provide:
+            1. Listing instance
+            2. Minimal bid for frotend(min attr) & backend(cleaned data) check
+            3. Comment empty form 
+            4. All commnets of this listing.
+    """
+    # Save listing ID in user session for later use.(Comment, close, place bid etc.)
     if request.user.is_authenticated:
         request.session['current_page_listing'] = listing_id
+        
     # Handle GET method
     listing = AuctionListing.objects.get(id=listing_id)
     
     # Provide minimal bid
     minimal_bid = listing.current_bid.price + Decimal('0.01')
+    
     place_bid_form = PlaceBidForm(custom_min_value=minimal_bid)
+    
+    comment_form = CommentForm()
+    comments = listing.comments.all()
 
+    
     return render(
         request, 
         'auctions/listing.html', 
         {
             'listing': listing,
-            'place_bid_form': place_bid_form
+            'place_bid_form': place_bid_form,
+            'comment_form': comment_form,
+            'comments': comments
         })
     
 
@@ -305,3 +326,115 @@ def cancel_auction(request):
     listing.save()
     
     return redirect(reverse('listing', args=[listing_id]))
+
+
+@login_required
+@require_POST
+def post_comment(request):
+    """
+    Required:
+        1. listing id 
+        2. Posting user 
+        3. Valid commnet text
+        
+    Actions:
+        1. Save comment instance 
+    """
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        return HttpResponseForbidden("Current page lisiting ID has somehow lost")
+    
+    
+    form = CommentForm(request.POST)
+    
+    if form.is_valid():
+        
+        content = form.cleaned_data['content']
+        listing = AuctionListing.objects.get(id=listing_id)
+        user = request.user
+        
+        # Save commnet instance 
+        comment = Comment(
+            auction_listing=listing,
+            user=user,
+            content=content
+        )
+        
+        res = comment.save(failed_message=COMMENT_SAVE_ERROR)
+        if res['status'] == 'failed':
+            messages.error(request, res['failed_message'])
+            
+        else:
+            messages.success(request, f"The comment form is correct! your comment: {content}")
+        
+    else:
+        messages.error(request, form.errors.as_text())
+        
+    return redirect(reverse('listing', args=[listing_id]))
+
+
+@login_required
+@require_POST
+def delete_comment(request, comment_id):
+    """
+    Required:
+        1. Comment id 
+        2. User 
+        3. Listing id 
+
+    """
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        messages.error(request, "The lisitng ID has somehow lost.")
+    
+    else:
+        
+        comment = get_object_or_404(Comment, id=comment_id)
+        
+        if comment.user != request.user:
+            messages.error(request, "You are not authorized to delete this comment.")
+        
+        else:
+            messages.success(request, 'Successfully deleted your comment!')
+            comment.delete()
+    
+    return redirect(reverse('listing', args=[listing_id]))
+
+
+@login_required
+@require_POST
+def provide_comment_content(request, comment_id):
+    
+    comment = get_object_or_404(Comment, comment_id)
+    if comment.user != request.user:
+        res = {
+            'status': 'failed',
+            'message': 'You are not authorized to delete this comment.'
+        }
+        
+    else:
+        res = {
+            'status': 'success',
+            'content': comment.content
+        }
+    return JsonResponse(res)
+
+
+# @login_required
+# @require_POST
+# def change_comment_content(request, comment_id):
+    
+    
+#     comment = get_object_or_404(Comment, comment_id)
+#     if comment.user != request.user:
+#         res = {
+#             'status': 'failed',
+#             'message': 'You are not authorized to delete this comment.'
+#         }
+        
+#     else:
+#         res = {
+#             'status': 'success',
+#             'content': comment.content
+#         }
+#     return JsonResponse(res)

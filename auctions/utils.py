@@ -24,13 +24,13 @@ def integrity_check(func):
     from django.db import IntegrityError
     
     def wrapper(instance, *args, **kwargs):
-        message = kwargs.pop('message', "An Integrity Error occurred")
+        message = kwargs.pop('failed_message', "An Integrity Error occurred")
         try:
             func(instance, *args, **kwargs)
             return {'status': 'success'}
         except IntegrityError:
 
-            return {'status': 'failed', 'message': message}
+            return {'status': 'failed', 'failed_message': message}
 
     return wrapper
 

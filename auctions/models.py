@@ -1,7 +1,10 @@
+import decimal
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.core.validators import MinValueValidator
-import decimal
+from django.core.validators import MinValueValidator, MinLengthValidator
+
 from .utils import integrity_check
 
 class User(AbstractUser):
@@ -78,14 +81,21 @@ class Bid(models.Model):
     
 class Comment(models.Model):
     """Model for comments on auction listings."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="comments")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    text = models.TextField(max_length=1024)
+    content = models.TextField(max_length=1024, validators=[MinLengthValidator(1)])
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    edited = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.user.username}'s comment on item: {self.auction_listing.title}"
+    
+    @integrity_check
+    def save(self, *args, **kwargs):
+        super().save( *args, **kwargs)
         
     

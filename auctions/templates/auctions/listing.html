@@ -22,8 +22,9 @@
     {% endif %}
 
     
-        <!-- close auction button -->
+    
     {% if user.id == listing.poster.id and listing.status == 'open' %}
+        <!-- Poster only: Close & Cancel Auction Buttons -->
         <div id="listing-owner-container" class="flex-box flex-box--listing-owner-box">
             <form action="{% url 'close_auction' %}" method="post">
                 {% csrf_token %}
@@ -68,8 +69,9 @@
 
         {% endif %}    
     </div>
-    <!-- User only: 1. Place Bid 2. watchlist  -->
+    
     {% if user.is_authenticated and listing.poster != user %}
+        <!-- User only(Not poster): 1. Place Bid 2. watchlist  -->
         <div class="user-container">
             <div class="bid-box">
                 <form action="{% url 'place_bid' %}" method="post">
@@ -96,8 +98,7 @@
             </div>
         </div>
 
-        
-
+    
         <!-- Toast body -->
         <div class="toast-container position-absolute bottom-0 end-0 p-3">
             <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -107,22 +108,53 @@
             </div>
         </div>
     {% endif %}
-    
+
+    <!-- Comment Section -->
+
     <div class="comment-section">
-        <div class="comment-section--header">
-            <h2>Comments {{ commnets.count }}</h2>
-        </div>
+        
+        <!-- Comment form -->
         <div class="comment-section--leave-commnet">
+            <form action="{% url 'comment' %}" method="post">
+                {% csrf_token %}
+                <div>{{ comment_form.content }}</div>
+                <div>
+                    <button class="btn btn-primary" >Submit</button>
+                </div>
+            </form>
             
         </div>
+        <!-- Comment header -->
+        <div class="comment-section--header">
+            <h2>Comments ({{ comments.count }})</h2>
+        </div>
+        
         {% if comments %}
+            <!-- Comment bodies -->
             <div class="commnet-section--container">
-                {% for comment in commnets %}
+                {% for comment in comments %}
                     <div class="comment-section--body">
-                        <div>{{ comment.user }}</div>
-                        <div>{{ comment.text }}</div>
-                        <div>{% if comment.edited %}Edited{% endif %} {{ comment.updated_at }}</div>
+                        <div>{{ comment.user.username }} {% if comment.user == user %}<span>Author</span>{% endif %}</div>
+                        <div>{{ comment.updated_at }} {% if comment.edited %}<span>(edited)</span>{% endif %}</div>
+                        <div>{{ comment.content }}</div>
                     </div>
+                   
+                    {% if comment.user == user %}
+                        <!-- Comment Actions -->
+                        <div class="comment-section--actions">
+                        
+                            <button id="editComment" type="button">Edit</button>
+                            <form 
+                                action="{% url 'delete_comment' comment.id %}" 
+                                method="post" 
+                                onsubmit="return confirm('Are you sure you want to delete this comment?');"
+                            >
+                                {% csrf_token %}
+                                <button type="submit">Delete</button>
+                            </form>
+                        
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% endif %}
