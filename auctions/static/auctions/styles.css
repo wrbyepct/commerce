@@ -8,7 +8,7 @@ body {
 }
 
 .no-show {
-  display: none;
+  display: none !important;
 }
 
 .flex-box {
@@ -16,6 +16,13 @@ body {
 }
 .flex-box--listing-owner-box {
   justify-content: flex-end;
+}
+
+.dropdown {
+  font-size: 0.75rem;
+}
+.dropdown button {
+  font-size: inherit;
 }
 
 #dropArea {

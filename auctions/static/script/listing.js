@@ -15,77 +15,97 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const watchlistCounter = document.getElementById('watchlist-counter');
     
     // Add to 'watchlist' script
-    watchlistBtn.addEventListener('click', function () {
+    if (watchlistBtn) {
+        watchlistBtn.addEventListener('click', function () {
         
-        // Requst backend to add listing to watchlist
-        fetch('/toggle_watchlist', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            credentials: 'include'
-        })
-        // Fetch back response data
-        .then(response => response.json())
-        .then(data => {
+            // Requst backend to add listing to watchlist
+            fetch('/toggle_watchlist', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                credentials: 'include'
+            })
+            // Fetch back response data
+            .then(response => response.json())
+            .then(data => {
+    
+                // Watchlist button click logic
+                if (data.status === "added") {
+                    // Change watchlist button text and color
+                    watchlistBtn.classList.add('btn-danger');
+                    watchlistBtn.classList.remove('btn-dark');
+                    watchlistBtn.textContent = 'Remove';
+    
+                    // Update watachlist counter indicator
+                    watchlistCounter.textContent = (Number(watchlistCounter.textContent) + 1).toString();
+                    if (watchlistCounter.classList.contains('d-none')) watchlistCounter.classList.remove('d-none');
+    
+                } else {
+                    // Change watchlist button text and color
+                    watchlistBtn.classList.add('btn-dark');
+                    watchlistBtn.classList.remove('btn-danger');
+                    watchlistBtn.textContent = 'Watchlist';
+    
+                    // Update watachlist counter indicator
+                    let wathclistCount = Number(watchlistCounter.textContent) - 1;
+                    if (wathclistCount == 0) watchlistCounter.classList.add('d-none');
+                    
+                    watchlistCounter.textContent = wathclistCount.toString()
+                    
+                }
+    
+                // Show toast
+                toastBody.textContent = data.message;
+                toastListing.show();
+            })
+            .catch(error => console.error(error))
+        });
+    }
+    
 
-            // Watchlist button click logic
-            if (data.status === "added") {
-                // Change watchlist button text and color
-                watchlistBtn.classList.add('btn-danger')
-                watchlistBtn.classList.remove('btn-dark')
-                watchlistBtn.textContent = 'Remove'
+   const commentContainers = document.querySelectorAll('.comment-section--body');
 
-                // Update watachlist counter indicator
-                watchlistCounter.textContent = (Number(watchlistCounter.textContent) + 1).toString();
-                if (watchlistCounter.classList.contains('no-show')) watchlistCounter.classList.remove('no-show');
+   commentContainers.forEach(commentContainer => {
+        const commentId = commentContainer.getAttribute('data-comment-id');
 
-            } else {
-                // Change watchlist button text and color
-                watchlistBtn.classList.add('btn-dark')
-                watchlistBtn.classList.remove('btn-danger')
-                watchlistBtn.textContent = 'Watchlist'
+        const contentArea = commentContainer.querySelector('textarea');
+        const originalCommentContent = contentArea.value;
 
-                // Update watachlist counter indicator
-                let wathclistCount = Number(watchlistCounter.textContent) - 1;
-                if (wathclistCount == 0) watchlistCounter.classList.add('no-show');
+        const editActionContainer = commentContainer.querySelector('.comment-secion--edit-actions');
+
+        const editBtn = commentContainer.querySelector('.edit-btn');
+        const cancelEditBtn = commentContainer.querySelector('.cancel-edit');
+        const saveEditBtn = commentContainer.querySelector('.save-edit');
+
+        const dropdown = commentContainer.querySelector('.dropdown');
+
+        // Edit logic
+        if (editBtn) {
+            editBtn.addEventListener('click', function(){
+
+                contentArea.removeAttribute("disabled");
+
+                contentArea.selectionStart = contentArea.value.length;
+                contentArea.focus();
                 
-                watchlistCounter.textContent = wathclistCount.toString()
-                
-            }
-
-            // Show toast
-            toastBody.textContent = data.message;
-            toastListing.show();
-        })
-    });
-
-
-    // const bidInput = document.getElementById('bidInput');
-    // const placeBid = document.getElementById('placeBid');
+                editActionContainer.classList.toggle('d-none');
+                dropdown.classList.toggle('d-none');
+            });
     
-    // placeBid.addEventListener('click', function(){
+        }
 
-    //     fetch(`/place_bid/${listingId}`, {
-    //         method: 'POST',
-    //         headers: {
-    //             'X-CSRFToken': csrfToken,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({'bid': bidInput.value})
-    //     }) 
+        // Cancel logic 
+        cancelEditBtn.addEventListener('click', function(){
 
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data.message);
-    //         toastBody.textContent = data.message;
-    //         toastListing.show();
-    //     }) 
-           
-    // })
-    
+            contentArea.value = originalCommentContent;
+            contentArea.setAttribute("disabled", true);
 
-    
-    
+            editActionContainer.classList.toggle('d-none');
+            dropdown.classList.toggle('d-none');
+        });
+
+   })
+
 
 });

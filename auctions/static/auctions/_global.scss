@@ -8,12 +8,19 @@ body {
 }
 
 .no-show {
-    display: none;
+    display: none !important;
 }
 
 .flex-box {
     display: flex;
     &--listing-owner-box {
         justify-content: flex-end;
+    }
+}
+
+.dropdown {
+    font-size: 0.75rem;
+    button {
+        font-size: inherit;
     }
 }

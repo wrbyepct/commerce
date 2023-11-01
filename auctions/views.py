@@ -4,7 +4,7 @@ from django.contrib import messages
 # For authentication 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 
 # For saving instance to model 
 from django.db import IntegrityError
@@ -14,8 +14,9 @@ from django.http import  HttpResponseRedirect, JsonResponse, HttpResponseForbidd
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
-
 from decimal import Decimal
+import json
+
 from .models import User, AuctionListing, Bid, Category, Comment
 from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm, CommentForm
 from .utils import print_normal_message, print_error_message
@@ -403,38 +404,29 @@ def delete_comment(request, comment_id):
 
 @login_required
 @require_POST
-def provide_comment_content(request, comment_id):
+def save_changed_comment(request, comment_id):
     
-    comment = get_object_or_404(Comment, comment_id)
-    if comment.user != request.user:
-        res = {
-            'status': 'failed',
-            'message': 'You are not authorized to delete this comment.'
-        }
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        messages.error(request, "The lisitng ID has somehow lost.")
+        
         
     else:
-        res = {
-            'status': 'success',
-            'content': comment.content
-        }
-    return JsonResponse(res)
-
-
-# @login_required
-# @require_POST
-# def change_comment_content(request, comment_id):
-    
-    
-#     comment = get_object_or_404(Comment, comment_id)
-#     if comment.user != request.user:
-#         res = {
-#             'status': 'failed',
-#             'message': 'You are not authorized to delete this comment.'
-#         }
+        comment = get_object_or_404(Comment, id=comment_id)
         
-#     else:
-#         res = {
-#             'status': 'success',
-#             'content': comment.content
-#         }
-#     return JsonResponse(res)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            
+            edited_comment = form.cleaned_data['content']
+            
+            comment.content = edited_comment
+            comment.edited = True if not comment.edited else comment.edited
+            
+            comment.save()
+            messages.success(request, f"comment form is valid. Content: {form.cleaned_data['content']}, comment edited: {comment.edited}")
+        
+        else:
+            messages.error(request, 'comment form is NOT valid') 
+            
+    return redirect(reverse('listing', args=[listing_id]))
+    

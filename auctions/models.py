@@ -24,6 +24,9 @@ class Category(models.Model):
 
 
 class AuctionListing(models.Model):
+    class Meta:
+        unique_together = ('poster', 'title', 'category')
+        
     """Model for auction listings."""
     poster = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     
@@ -57,9 +60,7 @@ Cateogry: {self.category.name}
     def save(self, *args, **kwargs):
         super().save( *args, **kwargs)
     
-    class Meta:
-        unique_together = ('poster', 'title', 'category')
-    
+   
 
 class Bid(models.Model):
     """Model for bids on auction listings."""

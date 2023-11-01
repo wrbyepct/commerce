@@ -18,7 +18,8 @@ urlpatterns = [
     path('toggle_watchlist', views.toggle_watchlist, name='toggle_watchlist'),
     path('close_auction', views.close_auction, name="close_auction"),
     path('cancel_auction', views.cancel_auction, name="cancel_auction"),
-    path('comment', views.post_comment, name='comment'),
+    path('post_comment', views.post_comment, name='post_comment'),
+    path('save_changed_comment/<uuid:comment_id>', views.save_changed_comment, name='save_changed_comment'),
     path('delete_comment/<uuid:comment_id>', views.delete_comment, name='delete_comment')
 ]
 

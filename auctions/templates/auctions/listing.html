@@ -115,7 +115,7 @@
         
         <!-- Comment form -->
         <div class="comment-section--leave-commnet">
-            <form action="{% url 'comment' %}" method="post">
+            <form action="{% url 'post_comment' %}" method="post">
                 {% csrf_token %}
                 <div>{{ comment_form.content }}</div>
                 <div>
@@ -133,28 +133,60 @@
             <!-- Comment bodies -->
             <div class="commnet-section--container">
                 {% for comment in comments %}
-                    <div class="comment-section--body">
-                        <div>{{ comment.user.username }} {% if comment.user == user %}<span>Author</span>{% endif %}</div>
-                        <div>{{ comment.updated_at }} {% if comment.edited %}<span>(edited)</span>{% endif %}</div>
-                        <div>{{ comment.content }}</div>
-                    </div>
-                   
-                    {% if comment.user == user %}
-                        <!-- Comment Actions -->
-                        <div class="comment-section--actions">
-                        
-                            <button id="editComment" type="button">Edit</button>
-                            <form 
-                                action="{% url 'delete_comment' comment.id %}" 
-                                method="post" 
-                                onsubmit="return confirm('Are you sure you want to delete this comment?');"
-                            >
-                                {% csrf_token %}
-                                <button type="submit">Delete</button>
-                            </form>
-                        
+                    <div class="comment-section--body" data-comment-id="{{ comment.id }}">
+                        <!-- Comment Infos -->
+                        <div class="comment-section--comment-info">
+                            <div>{{ comment.user.username }} {% if comment.user == listing.poster %}<span>Author</span>{% endif %}</div>
+                            <div>{{ comment.updated_at }} {% if comment.edited %}<span>(edited)</span>{% endif %}</div>
                         </div>
-                    {% endif %}
+                        <!-- Comment Content -->
+                        <div class="comment-section--content flex-box">
+                            <form action="{% url 'save_changed_comment' comment.id %}" method="post">
+                                {% csrf_token %}
+                                <textarea 
+                                    cols="50" 
+                                    rows="4" 
+                                    name="content"
+                                    disabled 
+                                    style="resize: none;" 
+                                >{{ comment.content }}</textarea>
+                                <!-- Edit Actions -->
+                                <div class="comment-secion--edit-actions d-none">
+                                    <button class="btn btn-outline-danger cancel-edit" type="button">Cancel</button>
+                                    <button class="btn btn-primary save-edit" type="submit">Save</button>
+                                </div>
+                            </form>
+
+                            <div class="dropdown">
+                                <button class="btn btn-outlin-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    {% if comment.user == user %}
+                                        <li>
+                                            <button class="dropdown-item edit-btn" type="button">Edit</button>
+                                        </li>
+                                        
+                                        <li>
+                                            <form 
+                                                action="{% url 'delete_comment' comment.id %}" 
+                                                method="post" 
+                                                onsubmit="return confirm('Are you sure you want to delete this comment?');"
+                                            >
+                                                {% csrf_token %}
+                                                <button class="dropdown-item" type="submit">Delete</button>
+                                            </form>
+    
+                                        </li>
+                                    {% else %}
+                                        <li><button class="dropdown-item" type="button">Report</button></li>
+                                    {% endif %}
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        
+                    </div> 
                 {% endfor %}
             </div>
         {% endif %}

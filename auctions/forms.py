@@ -147,6 +147,7 @@ class CommentForm(forms.ModelForm):
         fields = ['content']
         widgets = {
             'content': forms.Textarea(attrs={
+                'cols': 50,
                 'rows': 4,
                 'placeholder': "Leave a Commnet...",
                 'style': 'resize: none;'
