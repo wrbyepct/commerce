@@ -3,14 +3,28 @@
 {% load static %}
 
 {% block body %}
-    <div class="container">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+                {{ message }}
+                <!-- Bootstrap class and script for dismiss button -->
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="d-flex justify-content-center ">
+        <h2>Watchlist</h2>
+    </div>
+    <div class="container-fluid container-watchlist">
         {% if watchlist %}
             {% for listing in watchlist %}
                 
-                <div class="listing">
-                    <a href="{% url 'listing' listing.id %}">
+                <div class="card card-watchlist-item border-start-0 border-end-0 border-bottom-0 rounded-0">
+                    <a class="d-flex" href="{% url 'listing' listing.id %}">
 
-                        <div class="img-box">
+                        <div class="watchlist-img">
                             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
                             <img 
                                 src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
@@ -18,12 +32,32 @@
                                 onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
                             >
                         </div>
-                        <div class="product-info">
+                        <div class="product-info text-center d-flex flex-column justify-content-evenly ">
                             <h3>{{listing.title}}</h3>
-                            <h4>Price: ${{ listing.current_bid.price }}</h4>
-                            <div>Updated at: {{listing.updated_at}}</div>
-                            <div>
-                                <span>Status: {{ listing.get_status_display }}</span>
+                            <div class="watchlist watchlist-info-box">
+                                <p class="watchlist-info-price">Price: ${{ listing.current_bid.price }}</p>
+                                
+                                <div>
+                                    <span class="watchlist watchlist-info-bids">{{ listing.bids.count }} total bids</span>
+                                </div>
+                                <div>
+                                    <p>Status: <span class="watchlist-status">{{ listing.get_status_display }}</span></p>
+                                </div>
+                                <div>Updated at: {{listing.updated_at}}</div>
+                            </div>
+                            
+                            <div class="remove-watchlist">
+                                <form action="{% url 'remove_from_watchlist' listing.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button
+                                        class="btn btn-outline-dark"
+                                        type="submit"
+                                    >
+                                        <i class="bi bi-x"></i>
+                                        <span>Remove</span>
+                                    </button>
+                                </form>
+                                
                             </div>
                             
                         </div>

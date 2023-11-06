@@ -83,7 +83,6 @@ class NewListingForm(forms.ModelForm):
         label="Choose a category"
     )
     
- 
     def clean_category(self):
         # Check for valid new cate
         new_cate = self.cleaned_data['new_category'].lower().strip()
@@ -95,11 +94,11 @@ class NewListingForm(forms.ModelForm):
             try:
                 category = Category(name=new_cate)
                 category.save()
-                return category
+                return category # The instance returns the name of the category
             except IntegrityError:
                 raise ValidationError("Category with this name already exists.")
         
-        # If new cate is emptry, then return selected value   
+        # If new cate is empty, then return selected value   
         return self.cleaned_data['category']
        
         

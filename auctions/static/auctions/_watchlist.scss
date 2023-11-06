@@ -1,0 +1,35 @@
+
+
+.container-watchlist{
+    padding: 0;
+    .card-watchlist-item {
+        height: 20rem;
+        a {
+            height: inherit;
+
+            .watchlist-img {
+                width: 20rem;
+
+            }
+            
+        }
+    }
+    .watchlist {
+        &-info-price {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        &-info-bids {
+            background-color: rgb(247, 209, 85);
+            padding: 0.25rem 0.5rem;
+            border-radius: 10%;
+
+            display: inline-block;
+            margin: 0.25rem 0;
+
+        }
+    }
+        
+       
+        
+}

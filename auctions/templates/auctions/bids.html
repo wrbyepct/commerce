@@ -1,0 +1,14 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    <div class="bid-item-container" >
+        <h2>Bids on item: <a href="{% url 'listing' listing.id %}">{{ listing.title}}</a></h2>
+    </div>
+    {% for bid in bids %}
+        <div class="bid-info-container">
+            <div>Bidder: {{bid.user.username}} {% if listing.poster == bid.user %}(Listing Poster){% endif %}</div>
+            <div>Bid price: {{bid.price}}</div>
+            <div>Placed time: {{bid.updated_at}}</div>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.humanize',
     'livereload',
     'auctions.apps.AuctionsConfig',
     'django.contrib.admin',

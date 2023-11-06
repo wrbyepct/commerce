@@ -1,18 +1,41 @@
 {% extends 'auctions/layout.html' %}
 
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'script/categories.js'%}"></script>
+{% endblock %}
+
 {% block body%}
-    <h2>Categories</h2>
+    <div class="d-flex justify-content-center ">
+        <h2>Categories</h2>
+    </div>
+    
 
     {% if categories %}
-        <div class="container">
-            <ul class="list">
+        <div class="container cate-container">
+            <div class="row gy-3 justify-content-center">
                 {% for category in categories %}
-                    <li class="list-item">
-                        <a href="/categories?category={{ category.name }}">{{ category.name }}</a>
-                    </li>
+                    
+                    <div 
+                        class="col-sm-12 col-lg-6 category-box "  
+                    >
+                        <div 
+                            class="card"
+                            style="background-image: url('{{ category.url }}'); background-size: cover; background-position: center;"
+                        >
+                            <a 
+                                class="category-btn d-flex flex-column justify-content-center text-center text-overlay " 
+                                href="/categories?category={{ category.name }}"
+                            >
+                                <span>{{ category.name }}</span>
+                            </a>
+                        </div>
+                            
+                    </div>
+                        
                 {% endfor %}
-            </ul>
-
+            </div>
         </div>
     {% endif %}
     

@@ -5,7 +5,7 @@
 
     
 {% block head %}
-    <script src="{% static 'script/listing.js' %}"></script> 
+    <script type="module" src="{% static 'script/listing.js' %}"></script> 
     <meta name="csrf-token" content="{{ csrf_token }}">  
 {% endblock %}
 
@@ -46,7 +46,12 @@
         {% if listing %}
 
             <div class="listing">
-                <div class="img-box">
+                {% if listing.winner %}
+                    <div class="winner-container">
+                        <span>Winner of the bid: {{ listing.winner.username }} </span>
+                    </div>
+                {% endif%}
+                <div class="img-box listing-img-box">
                     <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
                     <img 
                         src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
@@ -60,10 +65,14 @@
                     <h5 class="status">Status: {{ listing.get_status_display }}</h5>
                     <div>Category: {% if listing.category %}{{ listing.category }}{% else %} Uncategorized{% endif %}</div>
                     <div>Created at: {{listing.created_at}}</div>
-                    {% if listing.created_at != listing.updated_at %}
-                        <div>Updated at: {{listing.updated_at}}</div>
-                    {% endif %}
+                        {% if listing.created_at != listing.updated_at %}
+                            <div>Updated at: {{listing.updated_at}}</div>
+                        {% endif %}
                     <div>Posted by: {{listing.poster.username}}</div>
+                    <div>
+                        <span><a href="{% url 'bids' %}">{{ total_bids }} bid(s)</a>so far.</span>
+                        <span>{% if listing.current_bid.user == user %}Your bid is the current bid{% endif %}</span>
+                    </div>
                 </div>
             </div>
 
@@ -89,9 +98,9 @@
             </div>
             <div class="watch-box">
                 <button 
-                    id="watchlistBtn" 
-                    class="btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-dark{% endif %}" 
+                    class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-dark{% endif %}" 
                     type="submit"
+                    item-id="{{ listing.id }}"
                 >
                     {% if listing in user.watchlist.all %}Remove{% else %}Watchlist{% endif %}
                 </button>
@@ -140,7 +149,7 @@
                             <div>{{ comment.updated_at }} {% if comment.edited %}<span>(edited)</span>{% endif %}</div>
                         </div>
                         <!-- Comment Content -->
-                        <div class="comment-section--content flex-box">
+                        <div class="comment-section--content d-flex flex-row">
                             <form action="{% url 'save_changed_comment' comment.id %}" method="post">
                                 {% csrf_token %}
                                 <textarea 
@@ -153,12 +162,12 @@
                                 <!-- Edit Actions -->
                                 <div class="comment-secion--edit-actions d-none">
                                     <button class="btn btn-outline-danger cancel-edit" type="button">Cancel</button>
-                                    <button class="btn btn-primary save-edit" type="submit">Save</button>
+                                    <button class="btn btn-primary" type="submit">Save</button>
                                 </div>
                             </form>
 
-                            <div class="dropdown">
-                                <button class="btn btn-outlin-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="dropdown dropdown--comment-actions">
+                                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                     {% if comment.user == user %}
@@ -184,17 +193,9 @@
                                 </ul>
                             </div>
                         </div>
-                        
-                        
                     </div> 
                 {% endfor %}
             </div>
         {% endif %}
     </div>
-
-    {% if listing.winner %}
-        <div class="winner-container">
-            <span>Winner of the bid: {{ listing.winner.username }} </span>
-        </div>
-    {% endif%}
 {% endblock %}

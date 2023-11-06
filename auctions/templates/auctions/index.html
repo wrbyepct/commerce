@@ -2,14 +2,26 @@
 
 {% load static %}
 
+{% load humanize %}
+
+{% load custom_filters %}
+
+{% block head %}
+    <script type="module" src="{% static 'script/index.js' %}"></script> 
+    <meta name="csrf-token" content="{{ csrf_token }}">  
+{% endblock %}
+
 {% block body %}
-    <h2>Active Listings</h2>
+    <div class="d-flex">
+        <h2 class="mx-auto">Active Listings</h2>
+    </div>
+    
 
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
                 {{ message }}
-                                      <!-- BooStrap class and script -->
+                                      <!-- Bootstrap class and script for dismiss button -->
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
@@ -17,29 +29,60 @@
 
     <div class="container">
         {% if listings %}
-            {% for listing in listings %}
+            
+                <div class="row gx-3 gy-5 justify-content-center">
+                    {% for listing in listings %}
+                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                            <div class="listing card d-flex justify-content-between card-box">
+                                <div class="listing-img-box">
+                                    <a href="{% url 'listing' listing.id %}">
+            
+                                        <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
+                                        <img 
+                                            src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
+                                            alt="{{ listing.description }}"
+                                            onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
+                                        >
+                                        
+                                        <div class="product-info card-body">
+                                            <h4>{{listing.title}}</h4>
+                                            <p class="description">{{listing.description}}</p>
+                                            <div><span>Current bid: </span></div>
+                                            <div class="d-flex flex-row align-items-start pricing-box">
+                                                {% with price=listing.current_bid.price|convert_price %}
+                                                    <strong>$</strong>
+                                                    <span class="price-integer">{{ price.0|intcomma }}</span>
+                                                    <span>{{ price.1 }}</span>
+                                                {% endwith %}
+                                            </div>
+                                            
+                                        </div>
                 
-                <div class="listing">
-                    <a href="{% url 'listing' listing.id %}">
-
-                        <div class="img-box">
-                            <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
-                            <img 
-                                src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
-                                alt="{{ listing.description }}"
-                                onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
-                            >
+                                    </a>
+                                </div>
+                                
+                                <div class="watch-box text-center mb-3">
+                                    <button 
+                                        class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
+                                        type="submit"
+                                        item-id="{{ listing.id }}"
+                                    >
+                                        {% if listing in user.watchlist.all %}
+                                            <i class="bi bi-heart-fill"></i>
+                                            <span>On watchlist</span>
+                                        {% else %}
+                                            <i class="bi bi-heart"></i>
+                                            <span>Watchlist</span>
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="product-info">
-                            <h3>{{listing.title}}</h3>
-                            <h4>Price: ${{ listing.current_bid.price }}</h4>
-                            <span>Created {{listing.created_at}}</span>
-                        </div>
-
-                    </a>
+                    {% endfor %}  
                 </div>
                 
-            {% endfor %}    
+                
+              
         {% endif %}
     </div>
     

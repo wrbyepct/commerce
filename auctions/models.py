@@ -64,8 +64,8 @@ Cateogry: {self.category.name}
 
 class Bid(models.Model):
     """Model for bids on auction listings."""
-    auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="all_bids")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="all_bids")
+    auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="bids")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
     
     price = models.DecimalField(
         max_digits=10, 

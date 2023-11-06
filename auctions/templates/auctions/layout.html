@@ -5,56 +5,92 @@
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
         {% block head %}{% endblock %}
     </head>
     <body>
         <h1>Auctions</h1>
-        <div>
-            {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
-            {% else %}
-                Not signed in.
-            {% endif %}
+        <div class="row justify-content-center ">
+            <div class="d-flex flex-row justify-content-between align-items-center nav-container">
+                <div class="d-flex">
+                    
+                    <div class="d-flex flex-row align-items-center">
+                        <i class="bi bi-lightning-fill"></i>
+                        <a class="nav-item" href="{% url 'index' %}">Active Listings</a>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        
+                        <div class="d-flex flex-row align-items-center">
+                            <i class="bi bi-tags-fill"></i>
+                            <a class="nav-item" href="{% url 'categories' %}">Categories</a>
+                        </div>
+                        <div class=" d-flex flex-row align-items-center">
+                            <i class="bi bi-bag"></i>
+                            <a class="nav-watchlist nav-item" href="{% url 'watchlist' %}">Watchlist 
+                            
+                                <span 
+                                    id="watchlist-counter" 
+                                    class="watchlist-counter {% if user.watchlist.count == 0 %}no-show{% endif %}">
+                                    {{ user.watchlist.count }}
+                                </span>
+                                
+                            </a>
+                        </div>    
+                    {% endif %}
+                        
+                </div>
+    
+                <div>
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle d-flex flex-row align-items-center p-0 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="greeting-user">Hi! <strong>{{user.username}}</strong>👋</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="py-2 px-3">
+                                    <a class="d-flex" href="{% url 'my_postings' %}">
+                                        <i class="bi bi-palette2"></i>
+                                        <span class="pt-1 ps-2 "> My Postings</span> 
+                                    </a>
+                                </li>
+                                <li class="py-2 px-3">
+                                    <a class="d-flex " href="{% url 'create' %}">
+                                        <i class="bi bi-plus-square"></i>
+                                        <span class="pt-1 ps-2"> Create Listing</span>
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="py-2 px-3">
+                                    <a class="d-flex" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right" style="font-size: 18px; padding-left: 1px"></i>
+                                        <span class="pt-1 ps-2 "> Log Out</span>   
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                    {% else %}
+                    <div class="d-flex account-actions">
+                        <a href="{% url 'login' %}">
+                            <span class="login-text">Log in</span>
+                        </a>
+                        <a href="{% url 'register' %}">
+                            <span class="signup-text">Sign up</span>
+                        </a>
+                    </div>
+                        
+                    {% endif %}
+    
+                </div>
+            </div>
+
         </div>
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-            </li>
-            {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'categories' %}">Categories</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-watchlist" href="{% url 'watchlist' %}">Watchlist 
-                        
-                        <span 
-                            id="watchlist-counter" 
-                            class="watchlist-counter {% if user.watchlist.count == 0 %}no-show{% endif %}">
-                            {{ user.watchlist.count }}
-                        </span>
-                        
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'my_postings' %}">My Postings</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'create' %}">Create New Listing</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-            {% endif %}
-        </ul>
+        
+        
         <hr>
         {% block body %}
         {% endblock %}

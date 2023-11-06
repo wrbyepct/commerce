@@ -33,7 +33,7 @@
                         <div class="product-info">
                             <h3>{{listing.title}}</h3>
                             <h4>Price: ${{ listing.current_bid.price }}</h4>
-                            <h5>Status: {{ listing.status }}</h5>
+                            <h5>Status: {{ listing.get_status_display }}</h5>
                             <span>Created {{listing.created_at}}</span>
                         </div>
 

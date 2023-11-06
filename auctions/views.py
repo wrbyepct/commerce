@@ -3,7 +3,7 @@ from django.contrib import messages
 
 # For authentication 
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 
 # For saving instance to model 
@@ -19,7 +19,7 @@ import json
 
 from .models import User, AuctionListing, Bid, Category, Comment
 from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm, CommentForm
-from .utils import print_normal_message, print_error_message
+from .utils import print_normal_message, print_error_message, get_unsplash_img_url
 
 from .constants import *
 
@@ -157,22 +157,52 @@ def create_listing(request):
     
     return render(request, 'auctions/create_listing.html', {'form': form})
 
+
 def categories(request):
     query = request.GET.get('category')
     
     if query is None:
-        categories = Category.objects.all()
-        return render(request, 'auctions/categories.html', {'categories': categories})
+        categories = Category.objects.all().order_by('-id')
+        
+        # Get img url for each category name 
+        cate_data = []
+        for category in categories:
+            cate_name = category.name
+            url = get_unsplash_img_url(cate_name)
+            cate_data.append({'name': cate_name, 'url': url} )       
+        
+        return render(request, 'auctions/categories.html', {'categories': cate_data})
     
     category = Category.objects.get(name=query)
     listings = AuctionListing.objects.filter(category=category, status='open')
     return render(request, 'auctions/index.html', {'listings': listings})
+
+
+
+@require_GET
+def bids_on_item(request):
+    
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        return HttpResponseForbidden('The listing ID has somehow lost')
+    
+    listing = AuctionListing.objects.get(id=listing_id)
+    bids = listing.bids.all().order_by('-price')
+    
+    return render(
+        request, 
+        'auctions/bids.html', {
+        'listing': listing,
+        'bids': bids
+    })
     
 
 @login_required
+@require_GET
 def watchlist(request): 
     user = request.user
-    return render(request, 'auctions/watchlist.html', {'watchlist': user.watchlist.all()}) 
+    return render(request, 'auctions/watchlist.html', {'watchlist': user.watchlist.all().order_by('-id')}) 
+
 
 @login_required
 def my_postings(request):
@@ -207,7 +237,7 @@ def listing_page(request, listing_id):
     comment_form = CommentForm()
     comments = listing.comments.all()
 
-    
+    total_bids = listing.bids.count()
     return render(
         request, 
         'auctions/listing.html', 
@@ -215,7 +245,8 @@ def listing_page(request, listing_id):
             'listing': listing,
             'place_bid_form': place_bid_form,
             'comment_form': comment_form,
-            'comments': comments
+            'comments': comments,
+            'total_bids': total_bids
         })
     
 
@@ -257,31 +288,43 @@ def place_bid(request):
             return redirect(reverse('listing', args=[listing_id]))
 
 
-@login_required   
-def toggle_watchlist(request):
-    # Get listing id from user session
-    listing_id = request.session.get('current_page_listing')
-    if listing_id is None:
-        return HttpResponseForbidden("listing ID has lost")
+@login_required
+@require_POST
+def toggle_watchlist(request, listing_id):
+    print_normal_message(listing_id)
     
-    if request.method == "POST":
+    listing = get_object_or_404(AuctionListing, id=listing_id)
+    user = request.user
+    
+    # Add to watchlist
+    if listing not in user.watchlist.all():
+        user.watchlist.add(listing)
+        res = {'status': 'added', 
+                'message': f"Added '{listing.title}' to watchlist"}
+    else:
+        # Remove from watchlists
+        user.watchlist.remove(listing)
+        res = {'status': 'removed', 
+                'message': f"Removed '{listing.title}' from watchlist"}
         
-        listing = AuctionListing.objects.get(id=listing_id)
-        user = request.user
-        
-        # Add to watchlist
-        if listing not in user.watchlist.all():
-            user.watchlist.add(listing)
-            res = {'status': 'added', 
-                    'message': f"Added '{listing.title}' to watchlist"}
-        else:
-            # Remove from watchlists
-            user.watchlist.remove(listing)
-            res = {'status': 'removed', 
-                    'message': f"Removed '{listing.title}' from watchlist"}
-            
-        return JsonResponse(res)
+    return JsonResponse(res)
 
+@login_required
+@require_POST
+def remove_from_watchlist(request, listing_id):
+    
+    listing = get_object_or_404(AuctionListing, id=listing_id)
+    user = request.user
+    print(user.watchlist.all())
+    if listing not in user.watchlist.all():
+        return HttpResponseForbidden('Trying to delete a non-existing item in watchlist')
+            
+    user.watchlist.remove(listing_id)
+    
+    messages.success(request, 'Item  removed.')
+    return redirect('watchlist')
+    
+    
 @login_required
 def close_auction(request):
     """
@@ -393,18 +436,20 @@ def delete_comment(request, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
         
         if comment.user != request.user:
-            messages.error(request, "You are not authorized to delete this comment.")
+            return HttpResponseForbidden("You are not authorized to edit this comment")
         
         else:
-            messages.success(request, 'Successfully deleted your comment!')
             comment.delete()
-    
+            messages.success(request, 'Successfully deleted your comment!')
+            
     return redirect(reverse('listing', args=[listing_id]))
 
 
 @login_required
 @require_POST
 def save_changed_comment(request, comment_id):
+    
+    
     
     listing_id = request.session.get('current_page_listing')
     if listing_id is None:
@@ -413,6 +458,10 @@ def save_changed_comment(request, comment_id):
         
     else:
         comment = get_object_or_404(Comment, id=comment_id)
+        
+        # Check if the user is the authour of the comment 
+        if comment.user != request.user:
+            return HttpResponseForbidden("You are not authorized to edit this comment")
         
         form = CommentForm(request.POST)
         if form.is_valid():

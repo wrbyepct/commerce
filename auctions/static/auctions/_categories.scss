@@ -1,0 +1,50 @@
+
+@media (max-width: 767px) {
+    .cate-container {
+        width: 95%;
+    }
+}
+
+@media (min-width: 768px) {
+    .cate-container {
+        width: 90%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .cate-container {
+        width: 70%;
+    }
+}
+
+
+.cate-container {
+    margin-top: 2rem;
+    height: 70vh;
+    
+    .category-box {
+        height: 20rem;
+        max-width: 31.125rem;
+        min-width: 25.625rem;
+        .card {
+            height: 100%;
+            transition: all 0.15s ease-in-out;
+            &:hover {
+                scale: (1.01);
+                .text-overlay {
+                    background: rgba(255, 255, 255, 0.4); /* Black overlay with 50% opacity */
+                }
+            }
+        }
+        .category-btn {
+            font-size: 2rem;
+            height: inherit;
+        }
+        .text-overlay {
+            background: rgba(255, 255, 255, 0.2); /* Black overlay with 50% opacity */
+            
+        }
+    }
+
+}
+

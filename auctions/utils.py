@@ -1,12 +1,12 @@
 
 import re
+import requests
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+UPSPLASH_API_KEY = os.getenv('UNSPLASH_API_KEY')
 
-def only_contains_word_or_empty_string(string):
-    pattern = re.compile(r"[a-z]*", flags=re.IGNORECASE)
-    match = pattern.fullmatch(string=string)
-    return True if match else False
-        
 
 def print_normal_message(obj_text):
     print('################')
@@ -42,4 +42,24 @@ def create_default_category(sender, **kargs):
         Category.objects.get_or_create(name='other')
     except InterruptedError:
         pass
-    
+
+
+def only_contains_word_or_empty_string(string):
+    pattern = re.compile(r"[a-z]*", flags=re.IGNORECASE)
+    match = pattern.fullmatch(string=string)
+    return True if match else False
+
+def get_unsplash_img_url(query):
+    url = 'https://api.unsplash.com/search/photos'
+    params = {
+        'query': query,
+        'client_id': UPSPLASH_API_KEY,
+        'per_page': 1
+    }
+    res = requests.get(url, params=params)
+    if res.status_code == 200:
+        data = res.json()
+        first_image_url = data['results'][0]['urls']['regular']
+        return first_image_url
+    else:
+        return None
