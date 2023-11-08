@@ -83,3 +83,32 @@
     font-family: Georgia,times new roman,Times,serif;
     font-style: italic;
 }
+
+
+
+
+// Comment Section
+.comment-input {
+    textarea {
+        width: 100%;
+        min-width: 40rem;
+        padding: 0.5rem;
+    }
+}
+
+
+
+.user-icon {
+    &::before {
+        transform: translateY(50%) scale(2);
+    }
+}
+
+.comment-section--body {
+    width: 80%;
+    min-width: 40rem;
+    textarea {
+        width: 100%;
+        padding: 0.5rem;
+    }
+}

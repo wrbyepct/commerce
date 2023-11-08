@@ -43,7 +43,7 @@
     {% endif %}
 
     <div class="container-fluid d-flex flex-wrap justify-content-evenly">
-        <!-- img info -->
+        <!-- Image info -->
         <div class="card" style="height: 40rem; width: 40rem;">
             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
             <img 
@@ -52,24 +52,29 @@
                 onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
             >
         </div>
+
         <!-- Main info -->
         <div class="flex-grow-1 position-relative listing-main-info ms-3">
-            <!-- Title -->
-            <div class="watch-box mb-3 position-absolute top-0 ">
-                <button 
-                    class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
-                    type="submit"
-                    item-id="{{ listing.id }}"
-                >
-                    {% if listing in user.watchlist.all %}
-                        <i class="bi bi-heart-fill"></i>
-                        <span>On watchlist</span>
-                    {% else %}
-                        <i class="bi bi-heart"></i>
-                        <span>Watchlist</span>
-                    {% endif %}
-                </button>
-            </div>
+           <!-- Watchist Button -->
+           {% if user.is_authenticated %}
+                <div class="watch-box mb-3 position-absolute top-0 ">
+                    <button 
+                        class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
+                        type="submit"
+                        item-id="{{ listing.id }}"
+                    >
+                        {% if listing in user.watchlist.all %}
+                            <i class="bi bi-heart-fill"></i>
+                            <span>On watchlist</span>
+                        {% else %}
+                            <i class="bi bi-heart"></i>
+                            <span>Watchlist</span>
+                        {% endif %}
+                    </button>
+                </div>
+            {% endif %}
+
+             <!-- Title -->
             <div class="listing-title">{{ listing.title }}</div>
 
             <!-- Watcher & Cate  -->
@@ -102,6 +107,7 @@
             </div>
 
         </div>
+
         <!-- Bid info -->
         <div class="card flex-grow-1 p-3 ms-2 listing-bid-info">
             <!-- Pricing -->
@@ -164,6 +170,12 @@
                 </div>
             {% endif %}
 
+            {% if not user.is_authenticated %}
+                <div class="text-center mt-5">
+                    <a class="link" href="{% url 'login' %}">Sign in to bid</a>
+                </div>
+            {% endif %}
+
             <!-- Poster info -->
             <div class="container mt-5 listing-poster-info">
 
@@ -209,29 +221,24 @@
     
     
     
-    <!-- Toast body -->
-    <div class="toast-container position-absolute bottom-0 end-0 p-3">
-        <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-body">
-            Added to watchlist.
-          </div>
-        </div>
-    </div>
+    
     <!-- Comment Section -->
 
-    <div class="comment-section">
+    <div class="container mt-5 pt-3 border-top  comment-section ">
         
         <!-- Comment form -->
-        <div class="comment-section--leave-commnet">
-            <form action="{% url 'post_comment' %}" method="post">
-                {% csrf_token %}
-                <div>{{ comment_form.content }}</div>
-                <div>
-                    <button class="btn btn-primary" >Submit</button>
-                </div>
-            </form>
-            
+        <div >
+            <div class="comment-section--leave-commnet w-100 m-auto ">
+                <form action="{% url 'post_comment' %}" method="post">
+                    {% csrf_token %}
+                    <div class="comment-input">{{ comment_form.content }}</div>
+                    <div class="text-end">
+                        <button class="btn btn-primary" >Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
+        
         <!-- Comment header -->
         <div class="comment-section--header">
             <h2>Comments ({{ comments.count }})</h2>
@@ -241,17 +248,24 @@
             <!-- Comment bodies -->
             <div class="commnet-section--container">
                 {% for comment in comments %}
-                    <div class="comment-section--body" data-comment-id="{{ comment.id }}">
+                    <div class="comment-section--body m-auto " data-comment-id="{{ comment.id }}">
                         <!-- Comment Infos -->
-                        <div class="comment-section--comment-info">
-                            <div>{{ comment.user.username }} {% if comment.user == listing.poster %}<span>Author</span>{% endif %}</div>
-                            <div>{{ comment.updated_at }} {% if comment.edited %}<span>(edited)</span>{% endif %}</div>
+                        <div class="comment-section--comment-info d-flex">
+                            <i class="bi bi-person-circle user-icon"></i>
+                            <div class="ms-4">
+                                <div>{{ comment.user.username }} {% if comment.user == listing.poster %}<span>author</span>{% endif %}</div>
+                                <div class="">
+                                    {{ comment.updated_at|naturaltime }} {% if comment.edited %}<span>(edited)</span>{% endif %}
+                                </div>
+                            </div>
+                            
                         </div>
                         <!-- Comment Content -->
                         <div class="comment-section--content d-flex flex-row">
-                            <form action="{% url 'save_changed_comment' comment.id %}" method="post">
+                            <form class="flex-grow-1" action="{% url 'save_changed_comment' comment.id %}" method="post">
                                 {% csrf_token %}
                                 <textarea 
+                                    class="flex-grow-1"
                                     cols="50" 
                                     rows="4" 
                                     name="content"
@@ -296,5 +310,15 @@
                 {% endfor %}
             </div>
         {% endif %}
+    </div>
+
+
+    <!-- Toast body -->
+    <div class="toast-container position-absolute bottom-0 end-0 p-3">
+        <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-body">
+            Added to watchlist.
+          </div>
+        </div>
     </div>
 {% endblock %}
