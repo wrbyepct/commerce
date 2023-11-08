@@ -1,7 +1,7 @@
 {% extends 'auctions/layout.html' %}
 
 {% load static %}
-
+{% load humanize %}
 {% block body %}
 
     {% if messages %}
@@ -24,7 +24,7 @@
                 <div class="card card-watchlist-item border-start-0 border-end-0 border-bottom-0 rounded-0">
                     <a class="d-flex" href="{% url 'listing' listing.id %}">
 
-                        <div class="watchlist-img">
+                        <div class="watchlist-img d-flex flex-column justify-content-center ">
                             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
                             <img 
                                 src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
@@ -32,21 +32,25 @@
                                 onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
                             >
                         </div>
-                        <div class="product-info text-center d-flex flex-column justify-content-evenly ">
+                        <div class="d-flex flex-column justify-content-evenly text-center product-info-container listing">
                             <h3>{{listing.title}}</h3>
-                            <div class="watchlist watchlist-info-box">
-                                <p class="watchlist-info-price">Price: ${{ listing.current_bid.price }}</p>
+                            <div class="listing-info-price">Price: ${{ listing.current_bid.price|intcomma }}</div>
+                            <div class="listing-info-box">
+                                <div>
+                                    <span class="listing-info-bids">{{ listing.bids.count }} total bids</span>
+                                </div>
+                              
+                                <div class="status-box">Status: 
+                                    <span 
+                                        class="status {% if listing.status == 'open' %}status-open{% elif listing.status == 'cancelled' %} status-cancelled {% else %} status-closed {% endif %}">
+                                        {{ listing.get_status_display }}
+                                    </span>
+                                </div>
                                 
-                                <div>
-                                    <span class="watchlist watchlist-info-bids">{{ listing.bids.count }} total bids</span>
-                                </div>
-                                <div>
-                                    <p>Status: <span class="watchlist-status">{{ listing.get_status_display }}</span></p>
-                                </div>
-                                <div>Updated at: {{listing.updated_at}}</div>
+                                <div class="listing-status-time">Updated at: {{ listing.updated_at|naturaltime }}</div>
                             </div>
                             
-                            <div class="remove-watchlist">
+                            <div class="listing-remove">
                                 <form action="{% url 'remove_from_watchlist' listing.id %}" method="post">
                                     {% csrf_token %}
                                     <button

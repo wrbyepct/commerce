@@ -1,9 +1,12 @@
 {% extends "auctions/layout.html" %}
 
 {% load static %}
+{% load humanize %}
 
 {% block body %}
-    <h2>My Postings</h2>
+    <div class="d-flex justify-content-center ">
+        <h2>My Postings</h2>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
@@ -15,26 +18,64 @@
         {% endfor %}
     {% endif %}
 
-    <div class="container">
+    <div class="container-fluid p-0 ">
         {% if listings %}
             {% for listing in listings %}
                 
-                <div class="listing">
-                    <a href="{% url 'listing' listing.id %}">
+                <div class="card border-bottom-0 border-start-0 border-end-0 ">
+                    <a class="d-flex" href="{% url 'listing' listing.id %}">
 
-                        <div class="img-box">
+                        <div 
+                            class="d-flex flex-column justify-content-center "
+                            style="height: 20rem; width: 20rem;"
+                        >
                             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
                             <img 
+                                class="thumbnail-img"
+                                
                                 src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
                                 alt="{{ listing.description }}"
                                 onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
                             >
                         </div>
-                        <div class="product-info">
+                        
+                        <div class="d-flex flex-column justify-content-evenly text-center product-info-container listing">
                             <h3>{{listing.title}}</h3>
-                            <h4>Price: ${{ listing.current_bid.price }}</h4>
-                            <h5>Status: {{ listing.get_status_display }}</h5>
-                            <span>Created {{listing.created_at}}</span>
+                            <div class="listing-info-price">Price: ${{ listing.current_bid.price|intcomma }}</div>
+                            <div class="listing-info-box">
+                                <div>
+                                    <span class="listing-info-bids">{{ listing.bids.count }} total bids</span>
+                                </div>
+                                <div class="status-box">Status: 
+                                    <span 
+                                        class="status {% if listing.status == 'open' %}status-open{% elif listing.status == 'cancelled' %} status-cancelled {% else %} status-closed {% endif %}">
+                                        {{ listing.get_status_display }}
+                                    </span>
+                                </div>
+                                <div class="listing-status-time">Created at: {{ listing.created_at|naturalday }}</div>
+                            </div>
+
+                            <!-- <div class="myposting-cancel">
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <button
+                                        class="btn btn-outline-danger"
+                                        type="submit"
+                                        arial-label="cancel-auction"
+                                        data-listing-id = "{{ listing.id }}"
+                                    >
+                                        <i class="bi bi-x-circle"></i>
+                                        <span>Cancel</span>
+                                    </button>
+                                </form>
+                            </div> -->
+                            {% if listing.status == 'closed' %}
+                                <div>Winner of the bid: <strong style="font-size: 1.25rem;">{{listing.winner.username}}</strong></div>
+                            {% elif listing.status == 'cancelled' %}
+                                <div><strong>Cancelled at: {{ listing.updated_at|naturalday }}</strong></div>
+                            {% else %}
+                                <div><strong>Updated at: {{ listing.updated_at|naturaltime }}</strong></div>
+                            {% endif %}
                         </div>
 
                     </a>

@@ -1,0 +1,69 @@
+
+
+.link {
+    
+    color:rgb(88, 168, 233);
+    &:hover{
+        text-decoration: underline; 
+        color: rgb(255, 119, 0);
+    }
+}
+
+.listing {
+    &-main-info {
+        min-width: 30rem;
+        max-width: 40.5rem;
+        .watch-box {
+            right: 0;
+            transform: scale(0.85);
+        }
+    }
+    &-title {
+        font-family: Georgia,times new roman,Times,serif;
+        font-size: 2.5rem;
+        font-style: italic;
+        width: 80%;
+    }
+    &-info {
+        border-bottom: 1px solid rgb(183, 183, 183);
+    }
+    &-bid-info {
+        background: #f1f3f4;
+        max-width: 25rem;
+        max-height: 25rem;
+        &-link {
+            color:rgb(54, 54, 54);
+           
+        }
+    }
+    &-minor-info {
+        font-size: 0.75rem;
+    }
+    &-description {
+        max-width: 30rem;
+    }
+    &-poster-info {
+        color: rgb(54, 54, 54);
+        font-size: 0.875rem;
+    }
+}
+
+.status-tag {
+    padding: 0.125rem 0.75rem;
+    border-radius: 10px;
+    &-active {
+        background: rgb(60, 60, 60);
+        color:rgb(233, 233, 233);
+    }
+    &-closed {
+        background: rgb(255, 187, 0);
+        font-weight: 700;
+    }
+}
+
+.bid-box {
+    input {
+        padding: 0.5rem;
+        height: 2.5rem;
+    }
+}

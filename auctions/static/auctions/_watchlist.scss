@@ -14,22 +14,69 @@
             
         }
     }
-    .watchlist {
-        &-info-price {
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-        &-info-bids {
-            background-color: rgb(247, 209, 85);
-            padding: 0.25rem 0.5rem;
-            border-radius: 10%;
+         
+}
 
-            display: inline-block;
-            margin: 0.25rem 0;
 
+.listing {
+    &-info-price {
+        font-weight: 800;
+        font-size: 1.5rem;
+    }
+    &-info-bids {
+        background-color: rgb(247, 209, 85);
+        padding: 0.25rem 0.5rem;
+
+        font-weight: bold;
+        display: inline-block;
+        border-radius: 5px;
+
+        margin: 0.25rem 0;
+
+    }
+
+
+    &-status-time {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: rgb(120, 120, 120);
+    
+        margin-top: 0.5rem;
+    }
+
+    
+
+    &-remove {
+        i {
+            bottom: 10px;
+            &::before {
+                transform: translateY(-15%) scale(1.35);
+                
+            }
+            
         }
     }
+    
+}
+
+.status-box {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    .status {
+        padding: 0.125rem 0.5rem;
         
-       
-        
+        border-radius: 5px;
+        font-weight: bold;
+
+        &-open {
+            background-color: rgb(131, 215, 136);
+        }
+        &-cancelled {
+            color: rgb(245, 243, 243);
+            background-color: rgba(242, 68, 68, 0.914);
+        }
+        &-closed {
+            background-color: rgba(125, 125, 125, 0.746);
+        }
+    }
 }

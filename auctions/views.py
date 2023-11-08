@@ -315,7 +315,7 @@ def remove_from_watchlist(request, listing_id):
     
     listing = get_object_or_404(AuctionListing, id=listing_id)
     user = request.user
-    print(user.watchlist.all())
+    
     if listing not in user.watchlist.all():
         return HttpResponseForbidden('Trying to delete a non-existing item in watchlist')
             
@@ -326,6 +326,7 @@ def remove_from_watchlist(request, listing_id):
     
     
 @login_required
+@require_POST
 def close_auction(request):
     """
     Required: 
@@ -335,26 +336,26 @@ def close_auction(request):
         1. Update listing winner 
         2. Update listing status
     """
-    if request.method == 'POST':
-        
-        listing_id = request.session.get('current_page_listing')
-        if listing_id is None:
-            return HttpResponseForbidden('Listing ID is somehow None')
-        
-        listing = AuctionListing.objects.get(id=listing_id)
-        
-        highest_bid = Bid.objects.filter(auction_listing=listing_id).order_by('-price').first()
-       
-        winner = highest_bid.user
-        
-        listing.winner = winner 
-        listing.status = 'closed'
-        
-        listing.save()
-        
-        return redirect(reverse('listing', args=[listing_id]))
+    
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        return HttpResponseForbidden('Listing ID is somehow None')
+    
+    listing = AuctionListing.objects.get(id=listing_id)
+    
+    highest_bid = Bid.objects.filter(auction_listing=listing_id).order_by('-price').first()
+    
+    winner = highest_bid.user
+    
+    listing.winner = winner 
+    listing.status = 'closed'
+    
+    listing.save()
+    
+    return redirect(reverse('listing', args=[listing_id]))
 
 @login_required
+@require_POST
 def cancel_auction(request):
     """
     Required:

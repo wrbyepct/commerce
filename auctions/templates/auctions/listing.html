@@ -1,8 +1,8 @@
 {% extends 'auctions/layout.html' %}
 
-
+{% load humanize %}
 {% load static %}
-
+{% load custom_filters %}
     
 {% block head %}
     <script type="module" src="{% static 'script/listing.js' %}"></script> 
@@ -42,82 +42,168 @@
         
     {% endif %}
 
-    <div class="container">
-        {% if listing %}
-
-            <div class="listing">
-                {% if listing.winner %}
-                    <div class="winner-container">
-                        <span>Winner of the bid: {{ listing.winner.username }} </span>
-                    </div>
-                {% endif%}
-                <div class="img-box listing-img-box">
-                    <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
-                    <img 
-                        src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
-                        alt="{{ listing.description }}"
-                        onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
-                    >
-                </div>
-                <div class="product-info">
-                    <h3>{{listing.title}}</h3>
-                    <h4 >Price: ${{ listing.current_bid.price }}</h4>
-                    <h5 class="status">Status: {{ listing.get_status_display }}</h5>
-                    <div>Category: {% if listing.category %}{{ listing.category }}{% else %} Uncategorized{% endif %}</div>
-                    <div>Created at: {{listing.created_at}}</div>
-                        {% if listing.created_at != listing.updated_at %}
-                            <div>Updated at: {{listing.updated_at}}</div>
-                        {% endif %}
-                    <div>Posted by: {{listing.poster.username}}</div>
-                    <div>
-                        <span><a href="{% url 'bids' %}">{{ total_bids }} bid(s)</a>so far.</span>
-                        <span>{% if listing.current_bid.user == user %}Your bid is the current bid{% endif %}</span>
-                    </div>
-                </div>
-            </div>
-
-        {% endif %}    
-    </div>
-    
-    {% if user.is_authenticated and listing.poster != user %}
-        <!-- User only(Not poster): 1. Place Bid 2. watchlist  -->
-        <div class="user-container">
-            <div class="bid-box">
-                <form action="{% url 'place_bid' %}" method="post">
-                    {% csrf_token %}
-                    {{ place_bid_form.price }}
-                    <button 
-                        id="placeBid" 
-                        class="btn btn-primary" 
-                        type="submit" 
-                    >
-                        Place bid
-                    </button>
-                </form>
-                
-            </div>
-            <div class="watch-box">
+    <div class="container-fluid d-flex flex-wrap justify-content-evenly">
+        <!-- img info -->
+        <div class="card" style="height: 40rem; width: 40rem;">
+            <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
+            <img 
+                src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
+                alt="{{ listing.description }}"
+                onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
+            >
+        </div>
+        <!-- Main info -->
+        <div class="flex-grow-1 position-relative listing-main-info ms-3">
+            <!-- Title -->
+            <div class="watch-box mb-3 position-absolute top-0 ">
                 <button 
-                    class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-dark{% endif %}" 
+                    class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
                     type="submit"
                     item-id="{{ listing.id }}"
                 >
-                    {% if listing in user.watchlist.all %}Remove{% else %}Watchlist{% endif %}
+                    {% if listing in user.watchlist.all %}
+                        <i class="bi bi-heart-fill"></i>
+                        <span>On watchlist</span>
+                    {% else %}
+                        <i class="bi bi-heart"></i>
+                        <span>Watchlist</span>
+                    {% endif %}
                 </button>
             </div>
-        </div>
+            <div class="listing-title">{{ listing.title }}</div>
 
-    
-        <!-- Toast body -->
-        <div class="toast-container position-absolute bottom-0 end-0 p-3">
-            <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-              <div class="toast-body">
-                Added to watchlist.
-              </div>
+            <!-- Watcher & Cate  -->
+            <div class="listing-info pb-2">
+                <div>
+                    <span>{{listing.watchers.count}} watchers</span>
+                    <span class="ms-4">Category: <a class="link" href="/categories?category={{ listing.category.name }}">{{ listing.category }}</a></span>
+                </div>                          
             </div>
-        </div>
-    {% endif %}
 
+            <!-- Pricing -->
+            <div class="listing-info">
+                <div class="d-flex justify-content-between p-1">
+                    <span>Price:</span>
+                    <div class="listing-minor-info">Updated: {{ listing.updated_at|naturaltime }}</div>
+                    
+                </div>
+                {% with price=listing.current_bid.price|split_integer_and_decimal %}
+                    <div class="d-flex pricing-box pb-5">
+                        <span>$</span>
+                        <span class="price-integer">{{ price.0 }}</span>
+                        <span>{{price.1}}</span>
+                    </div>
+                {% endwith %}
+            </div>
+            <!-- Description -->
+            <div class="p-1">
+                <p><strong>Description:</strong></p>
+                <p class="listing-description">{{ listing.description }}</p>
+            </div>
+
+        </div>
+        <!-- Bid info -->
+        <div class="card flex-grow-1 p-3 ms-2 listing-bid-info">
+            <!-- Pricing -->
+            <div class="d-flex justify-content-between">
+                <span>Current bid</span>
+                <span><a class="link ps-2" href="{% url 'bids' %}">{{ total_bids }} bids</a> </span>
+            </div>
+            {% with price=listing.current_bid.price|split_integer_and_decimal %}
+                <div class="d-flex pricing-box">
+                    <span>$</span>
+                    <span class="price-integer">{{ price.0 }}</span>
+                    <span>{{price.1}}</span>
+                    
+                </div>
+                <!-- How many bids -->
+                <div class="pb-5 text-end listing-bid-info">
+                    
+                    <span>{% if listing.current_bid.user == user %}Your bid is the current bid{% endif %}</span>
+                </div>
+            {% endwith %}
+            
+            
+            <!-- Status -->
+            <div class="status-box">
+                {% if listing.status == 'open' %}
+                    <span class="status-tag status-tag-active">
+                        accepting bids
+                    </span>
+                {% elif listing.satus == 'closed' %}
+                    <span class="status-tag status-tag-closed">
+                        auciton closed
+                    </span>
+                {% else %}
+                    <span class="status-tag status-tag-closed">
+                        auction cancelled
+                    </span>
+                {% endif %}
+            </div>
+            
+            <!-- Placing bid -->
+            {% if user.is_authenticated and listing.poster != user %}
+                <!-- User only(Not poster)  -->
+                <div class="user-container mt-3">
+                    <div class="bid-box">
+                        <form action="{% url 'place_bid' %}" method="post">
+                            {% csrf_token %}
+                            <div>{{ place_bid_form.price }}</div>
+                            <div class="mt-2">
+                                <button 
+                                    id="placeBid" 
+                                    class="btn btn-outline-dark w-100 rounded-0 " 
+                                    type="submit" 
+                                >
+                                    Place bid
+                                </button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Poster info -->
+            <div class="container mt-5 listing-poster-info">
+
+                <div class="row">
+                    <div class="col-3 p-0">
+                        <span>Posted by</span>
+                    </div>
+                    <div class="col-9">
+                        <strong>{{listing.poster.username}}</strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3 p-0">
+                        <span>Created at</span>
+                    </div>
+                    <div class="col-9">
+                        <strong>{{ listing.created_at|naturalday }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            {% if listing.winner %}
+                <div class="winner-container">
+                    <span>Winner of the bid: {{ listing.winner.username }} </span>
+                </div>
+            {% endif%}
+        </div>
+            
+    </div>
+    
+    
+    
+    <!-- Toast body -->
+    <div class="toast-container position-absolute bottom-0 end-0 p-3">
+        <div id="watchlist-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-body">
+            Added to watchlist.
+          </div>
+        </div>
+    </div>
     <!-- Comment Section -->
 
     <div class="comment-section">

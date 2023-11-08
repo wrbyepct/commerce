@@ -128,6 +128,7 @@ class PlaceBidForm(forms.ModelForm):
         if custom_min_value:
             self.fields['price'].widget.attrs['min'] = custom_min_value
             self.fields['price'].widget.attrs['value'] = custom_min_value
+            self.fields['price'].widget.attrs['class'] = 'w-100'
     
     def clean_price(self):
         # Prevent user from tampering with frontend fields
