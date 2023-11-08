@@ -219,7 +219,7 @@ input#id_image {
 }
 
 .status-tag {
-  padding: 0.125rem 0.75rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 10px;
 }
 .status-tag-active {
@@ -227,13 +227,28 @@ input#id_image {
   color: rgb(233, 233, 233);
 }
 .status-tag-closed {
+  font-size: 1.25rem;
   background: rgb(255, 187, 0);
   font-weight: 700;
+  border-radius: 2px;
 }
 
 .bid-box input {
   padding: 0.5rem;
   height: 2.5rem;
+}
+
+.eye-icon {
+  transform: scale(1.5);
+}
+.eye-icon::before {
+  color: rgb(255, 123, 0);
+  transform: translateY(-10%);
+}
+
+.congrats {
+  font-family: Georgia, times new roman, Times, serif;
+  font-style: italic;
 }
 
 .nav-item {

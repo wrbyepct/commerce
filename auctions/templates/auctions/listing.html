@@ -73,11 +73,11 @@
             <div class="listing-title">{{ listing.title }}</div>
 
             <!-- Watcher & Cate  -->
-            <div class="listing-info pb-2">
-                <div>
-                    <span>{{listing.watchers.count}} watchers</span>
-                    <span class="ms-4">Category: <a class="link" href="/categories?category={{ listing.category.name }}">{{ listing.category }}</a></span>
-                </div>                          
+            <div class="listing-info d-flex justify-content-between pb-2 px-2">
+                <span>Category: <a class="link" href="/categories?category={{ listing.category.name }}">{{ listing.category }}</a></span>
+                <span>{{listing.watchers.count}} 
+                    <i class="bi bi-eye eye-icon"></i>
+                </span>                     
             </div>
 
             <!-- Pricing -->
@@ -107,19 +107,14 @@
             <!-- Pricing -->
             <div class="d-flex justify-content-between">
                 <span>Current bid</span>
+                <!-- How many bids -->
                 <span><a class="link ps-2" href="{% url 'bids' %}">{{ total_bids }} bids</a> </span>
             </div>
             {% with price=listing.current_bid.price|split_integer_and_decimal %}
-                <div class="d-flex pricing-box">
+                <div class="d-flex pricing-box mb-5">
                     <span>$</span>
                     <span class="price-integer">{{ price.0 }}</span>
                     <span>{{price.1}}</span>
-                    
-                </div>
-                <!-- How many bids -->
-                <div class="pb-5 text-end listing-bid-info">
-                    
-                    <span>{% if listing.current_bid.user == user %}Your bid is the current bid{% endif %}</span>
                 </div>
             {% endwith %}
             
@@ -130,14 +125,19 @@
                     <span class="status-tag status-tag-active">
                         accepting bids
                     </span>
-                {% elif listing.satus == 'closed' %}
-                    <span class="status-tag status-tag-closed">
-                        auciton closed
-                    </span>
+                {% elif listing.status == 'closed' %}
+                    <div class="text-center">
+                        <span class="status-tag status-tag-closed">
+                            Auciton Closed
+                        </span>
+                    </div>
+                    
                 {% else %}
-                    <span class="status-tag status-tag-closed">
-                        auction cancelled
-                    </span>
+                    <div class="text-center">
+                        <span class="status-tag status-tag-closed">
+                            Auction Cancelled
+                        </span>
+                    </div>
                 {% endif %}
             </div>
             
@@ -155,7 +155,7 @@
                                     class="btn btn-outline-dark w-100 rounded-0 " 
                                     type="submit" 
                                 >
-                                    Place bid
+                                    Place Bid
                                 </button>
                             </div>
                             
@@ -168,26 +168,39 @@
             <div class="container mt-5 listing-poster-info">
 
                 <div class="row">
-                    <div class="col-3 p-0">
+                    <div class="col-4 p-0 ">
+                        <span>Highest Bidder</span>
+                    </div>
+                    <div class="col-8">
+                        <strong>
+                            {{ listing.current_bid.user.username }}
+                        </strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 p-0">
                         <span>Posted by</span>
                     </div>
-                    <div class="col-9">
+                    <div class="col-8">
                         <strong>{{listing.poster.username}}</strong>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3 p-0">
+                    <div class="col-4 p-0">
                         <span>Created at</span>
                     </div>
-                    <div class="col-9">
+                    <div class="col-8">
                         <strong>{{ listing.created_at|naturalday }}</strong>
                     </div>
                 </div>
             </div>
+
+            <!-- Winnder container -->
             
-            {% if listing.winner %}
-                <div class="winner-container">
-                    <span>Winner of the bid: {{ listing.winner.username }} </span>
+            {% if listing.winner and listing.winner == user %}
+                <div class="text-center mt-4">
+                    <h4 class="congrats">Congratulations 🎉</h4>
+                    <strong>You won the bid!</strong>
                 </div>
             {% endif%}
         </div>
