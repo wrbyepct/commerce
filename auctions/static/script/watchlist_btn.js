@@ -11,6 +11,9 @@ export function watchlistBtnListen() {
     const watchlistBtns = document.querySelectorAll('.watchlist-btn');
     const watchlistCounter = document.getElementById('watchlist-counter');
     
+    const watchersCount = document.getElementById('watchersCount');
+    const watcherTooltip = document.getElementById('watcherTooltip');
+
     watchlistBtns.forEach(watchlistBtn => {
         // Add to 'watchlist' script
         if (watchlistBtn) {
@@ -38,13 +41,23 @@ export function watchlistBtnListen() {
                         watchlistBtn.classList.add('btn-danger');
                         watchlistBtn.classList.remove('btn-outline-dark');
 
-                        watchlistBtn.textContent = "";
+                        // Change watchlist text and content
+                        watchlistBtn.textContent = "";  
                         buttonText.textContent = ' On watchlist';
                         icon.className = 'bi bi-heart-fill';
                         
                         // Update watachlist counter indicator
                         watchlistCounter.textContent = (Number(watchlistCounter.textContent) + 1).toString();
                         if (watchlistCounter.classList.contains('d-none')) watchlistCounter.classList.remove('d-none');
+
+                        // Update watchers count 
+                        if (watchersCount) {
+                            const count = Number(watchersCount.textContent) + 1;
+                            watchersCount.textContent = count ;
+
+                            watcherTooltip.setAttribute('title', `${count} watchers`)
+                            new bootstrap.Tooltip(watcherTooltip);
+                        }
         
                     } else {
                         // Change watchlist button text and color
@@ -61,6 +74,14 @@ export function watchlistBtnListen() {
                         
                         watchlistCounter.textContent = wathclistCount.toString()
                         
+                        // Update watchers count 
+                        if (watchersCount) {
+                            const count = Number(watchersCount.textContent) - 1;
+                            watchersCount.textContent = count ;
+                           
+                            watcherTooltip.setAttribute('title', `${count} watchers`)
+                            new bootstrap.Tooltip(watcherTooltip);
+                        }
                     }
                     
                     watchlistBtn.append(icon, buttonText);

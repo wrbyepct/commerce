@@ -12,68 +12,39 @@
         {% block head %}{% endblock %}
     </head>
     <body>
-        <h1>Auctions</h1>
-        <div class="row justify-content-center ">
-            <div class="d-flex flex-row justify-content-between align-items-center nav-container">
-                <div class="d-flex">
-                    
-                    <div class="d-flex flex-row align-items-center">
-                        <i class="bi bi-lightning-fill"></i>
-                        <a class="nav-item" href="{% url 'index' %}">Active Listings</a>
-                    </div>
-                    
-                    {% if user.is_authenticated %}
-                        
-                        <div class="d-flex flex-row align-items-center">
-                            <i class="bi bi-tags-fill"></i>
-                            <a class="nav-item" href="{% url 'categories' %}">Categories</a>
-                        </div>
-                        <div class=" d-flex flex-row align-items-center">
-                            <i class="bi bi-bag"></i>
-                            <a class="nav-watchlist nav-item" href="{% url 'watchlist' %}">Watchlist 
+        <!-- Header -->
+        <div class="header-container d-flex justify-content-between align-items-center m-auto" >
+            <h1 class="site-title">D.Auction🐥</h1>
+            <div>
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle d-flex flex-row align-items-center p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="greeting-user">Hi! <strong>{{user.username}}</strong>👋</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="py-2 px-3">
+                                <a class="d-flex" href="{% url 'my_postings' %}">
+                                    <i class="bi bi-palette2"></i>
+                                    <span class="pt-1 ps-2 "> My Postings</span> 
+                                </a>
+                            </li>
+                            <li class="py-2 px-3">
+                                <a class="d-flex " href="{% url 'create' %}">
+                                    <i class="bi bi-plus-square"></i>
+                                    <span class="pt-1 ps-2"> Create Listing</span>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="py-2 px-3">
+                                <a class="d-flex" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right" style="font-size: 18px; padding-left: 1px"></i>
+                                    <span class="pt-1 ps-2 "> Log Out</span>   
+                                </a>
+                            </li>
                             
-                                <span 
-                                    id="watchlist-counter" 
-                                    class="watchlist-counter {% if user.watchlist.count == 0 %}no-show{% endif %}">
-                                    {{ user.watchlist.count }}
-                                </span>
-                                
-                            </a>
-                        </div>    
-                    {% endif %}
-                        
-                </div>
-    
-                <div>
-                    {% if user.is_authenticated %}
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle d-flex flex-row align-items-center p-0 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="greeting-user">Hi! <strong>{{user.username}}</strong>👋</span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li class="py-2 px-3">
-                                    <a class="d-flex" href="{% url 'my_postings' %}">
-                                        <i class="bi bi-palette2"></i>
-                                        <span class="pt-1 ps-2 "> My Postings</span> 
-                                    </a>
-                                </li>
-                                <li class="py-2 px-3">
-                                    <a class="d-flex " href="{% url 'create' %}">
-                                        <i class="bi bi-plus-square"></i>
-                                        <span class="pt-1 ps-2"> Create Listing</span>
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li class="py-2 px-3">
-                                    <a class="d-flex" href="{% url 'logout' %}">
-                                        <i class="bi bi-box-arrow-right" style="font-size: 18px; padding-left: 1px"></i>
-                                        <span class="pt-1 ps-2 "> Log Out</span>   
-                                    </a>
-                                </li>
-                                
-                            </ul>
-                        </div>
-                    {% else %}
+                        </ul>
+                    </div>
+                {% else %}
                     <div class="d-flex account-actions">
                         <a href="{% url 'login' %}">
                             <span class="login-text">Log in</span>
@@ -82,16 +53,41 @@
                             <span class="signup-text">Sign up</span>
                         </a>
                     </div>
-                        
-                    {% endif %}
-    
-                </div>
-            </div>
+                {% endif %}
 
+            </div>
+        </div>
+
+        <!-- Navs -->
+        <div class="nav-container container-fluid w-100 border-top border-bottom pt-2 pb-3 my-3">
+            <div class="d-flex justify-content-center ">
+                
+                <div class="d-flex align-items-center nav-tag">
+                    <i class="bi bi-lightning-fill"></i>
+                    <a class="nav-item" href="{% url 'index' %}">ACTIVE LISTINGS</a>
+                </div>
+                <div class="d-flex align-items-center nav-tag">
+                    <i class="bi bi-tags-fill"></i>
+                    <a class="nav-item" href="{% url 'categories' %}">CATEGORIES</a>
+                </div>
+                {% if user.is_authenticated %}
+                    <div class=" d-flex align-items-center nav-tag">
+                        <i class="bi bi-bag"></i>
+                        <a class="nav-watchlist nav-item" href="{% url 'watchlist' %}">WATCHLIST 
+                        
+                            <span 
+                                id="watchlist-counter" 
+                                class="watchlist-counter {% if user.watchlist.count == 0 %}no-show{% endif %}">
+                                {{ user.watchlist.count }}
+                            </span>
+                            
+                        </a>
+                    </div>    
+                {% endif %}
+                    
+            </div>
         </div>
         
-        
-        <hr>
         {% block body %}
         {% endblock %}
     </body>

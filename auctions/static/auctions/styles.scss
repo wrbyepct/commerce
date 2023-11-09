@@ -6,9 +6,21 @@
 @import "listing";
 // Nav 
 
-.nav-item {
-    padding: 0.5rem 1rem 0 0.25rem;
+.nav-container {
+    .nav-tag {
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+            font-weight: 600;
+            color: #e4002b;
+        }   
+    }
+    .nav-item {
+        padding: 0.5rem 1rem 0 0.25rem;
+        
+    }
 }
+
 
 .nav-watchlist {
     position: relative;

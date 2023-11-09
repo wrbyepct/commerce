@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block body  %}
+    <!-- Message -->
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
@@ -22,7 +23,7 @@
     {% endif %}
 
     
-    
+    <!-- User authorized Actions -->
     {% if user.id == listing.poster.id and listing.status == 'open' %}
         <!-- Poster only: Close & Cancel Auction Buttons -->
         <div id="listing-owner-container" class="flex-box flex-box--listing-owner-box">
@@ -41,8 +42,9 @@
         </div>
         
     {% endif %}
-
-    <div class="container-fluid d-flex flex-wrap justify-content-evenly">
+    
+    <!-- Listing body  -->
+    <div class="container-fluid d-flex flex-wrap justify-content-center">
         <!-- Image info -->
         <div class="card" style="height: 40rem; width: 40rem;">
             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
@@ -80,12 +82,18 @@
             <!-- Watcher & Cate  -->
             <div class="listing-info d-flex justify-content-between pb-2 px-2">
                 <span>Category: <a class="link" href="/categories?category={{ listing.category.name }}">{{ listing.category }}</a></span>
-                <span>{{listing.watchers.count}} 
+                <span 
+                    id="watcherTooltip"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    title="{{ listing.watchers.count }} watchers"
+                >
+                    <span id="watchersCount">{{listing.watchers.count}} </span>
                     <i class="bi bi-eye eye-icon"></i>
                 </span>                     
             </div>
 
-            <!-- Pricing -->
+            <!-- Pricing & Update time -->
             <div class="listing-info">
                 <div class="d-flex justify-content-between p-1">
                     <span>Price:</span>
@@ -179,29 +187,29 @@
             <!-- Poster info -->
             <div class="container mt-5 listing-poster-info">
 
-                <div class="row">
-                    <div class="col-4 p-0 ">
+                <div class="row" >
+                    <div class="col-5 p-0 ">
                         <span>Highest Bidder</span>
                     </div>
-                    <div class="col-8">
+                    <div class="col-7">
                         <strong>
                             {{ listing.current_bid.user.username }}
                         </strong>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-4 p-0">
+                    <div class="col-5 p-0">
                         <span>Posted by</span>
                     </div>
-                    <div class="col-8">
+                    <div class="col-7">
                         <strong>{{listing.poster.username}}</strong>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-4 p-0">
+                    <div class="col-5 p-0">
                         <span>Created at</span>
                     </div>
-                    <div class="col-8">
+                    <div class="col-7">
                         <strong>{{ listing.created_at|naturalday }}</strong>
                     </div>
                 </div>
@@ -219,65 +227,81 @@
             
     </div>
     
-    
-    
-    
     <!-- Comment Section -->
-
-    <div class="container mt-5 pt-3 border-top  comment-section ">
+    <div class="container mt-5 pt-3 border-top comment-section ">
         
-        <!-- Comment form -->
-        <div >
-            <div class="comment-section--leave-commnet w-100 m-auto ">
-                <form action="{% url 'post_comment' %}" method="post">
-                    {% csrf_token %}
-                    <div class="comment-input">{{ comment_form.content }}</div>
-                    <div class="text-end">
-                        <button class="btn btn-primary" >Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Comment header -->
-        <div class="comment-section--header">
-            <h2>Comments ({{ comments.count }})</h2>
-        </div>
-        
-        {% if comments %}
-            <!-- Comment bodies -->
-            <div class="commnet-section--container">
-                {% for comment in comments %}
-                    <div class="comment-section--body m-auto " data-comment-id="{{ comment.id }}">
-                        <!-- Comment Infos -->
-                        <div class="comment-section--comment-info d-flex">
-                            <i class="bi bi-person-circle user-icon"></i>
-                            <div class="ms-4">
-                                <div>{{ comment.user.username }} {% if comment.user == listing.poster %}<span>author</span>{% endif %}</div>
-                                <div class="">
-                                    {{ comment.updated_at|naturaltime }} {% if comment.edited %}<span>(edited)</span>{% endif %}
-                                </div>
-                            </div>
-                            
+        <!-- Comment form -- Authentication required -->
+        {% if user.is_authenticated %}
+            <div>
+                <div class="comment-section--leave-commnet w-75 m-auto ">
+                    <form action="{% url 'post_comment' %}" method="post">
+                        {% csrf_token %}
+                        <div class="comment-input">{{ comment_form.content }}</div>
+                        <div class="text-end">
+                            <button class="btn btn-primary rounded-0" >Comment</button>
                         </div>
-                        <!-- Comment Content -->
-                        <div class="comment-section--content d-flex flex-row">
-                            <form class="flex-grow-1" action="{% url 'save_changed_comment' comment.id %}" method="post">
-                                {% csrf_token %}
-                                <textarea 
-                                    class="flex-grow-1"
-                                    cols="50" 
-                                    rows="4" 
-                                    name="content"
-                                    disabled 
-                                    style="resize: none;" 
-                                >{{ comment.content }}</textarea>
-                                <!-- Edit Actions -->
-                                <div class="comment-secion--edit-actions d-none">
-                                    <button class="btn btn-outline-danger cancel-edit" type="button">Cancel</button>
-                                    <button class="btn btn-primary" type="submit">Save</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="d-flex flex-column justify-content-center text-center py-5">
+                <div>
+                    <a class="link fs-5" href="{% url 'login' %}">Sign in to comment</a>
+                </div>
+                <div>
+                    <span>Don't have an account?</span>
+                    <a class="link ps-2" href="{% url 'register' %}">Register here!</a>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="commnet-section--container">
+            <!-- Comment header -->
+            <div class="comment-section--header m-auto mb-4">
+                <h2>Comments ({{ comments.count }})</h2>
+            </div>
+        
+            {% if comments %}
+                <!-- Comment bodies -->
+                
+                    {% for comment in comments %}
+                        <div class="comment-section--body m-auto d-flex pt-3" data-comment-id="{{ comment.id }}">
+                            <!-- Comment Profile Icon  -->
+                            <div class="comment-profile-icon">
+                                <i class="bi bi-person-circle user-icon"></i>
+                            </div>
+                            <!-- Comment Main Info -->
+                            <div class="flex-grow-1">
+                                <!-- Author & Time -->
+                                <div class="comment-section--comment-info d-flex">
+                                    <div class="ms-4">
+                                        <span class="commenter">{{ comment.user.username }} {% if comment.user == listing.poster %}<span>author</span>{% endif %}</span>
+                                        <span class="comment-time">
+                                            {{ comment.updated_at|naturaltime }} {% if comment.edited %}<span>(edited)</span>{% endif %}
+                                        </span>
+                                    </div>      
                                 </div>
-                            </form>
+                                <!-- Comment Content -->
+                                <div class="comment-section--content d-flex flex-row">
+                                    <form class="flex-grow-1" action="{% url 'save_changed_comment' comment.id %}" method="post">
+                                        {% csrf_token %}
+                                        <textarea 
+                                            class="flex-grow-1"
+                                            cols="50" 
+                                            rows="3" 
+                                            name="content"
+                                            disabled 
+                                            style="resize: none;" 
+                                        >{{ comment.content }}</textarea>
+                                        <!-- Edit Actions -->
+                                        <div class="comment-secion--edit-actions text-end d-none">
+                                            <button class="btn btn-outline-danger cancel-edit" type="button">Cancel</button>
+                                            <button class="btn btn-primary" type="submit">Save</button>
+                                        </div>
+                                    </form>
+                                    
+                                </div>
+                            </div> 
 
                             <div class="dropdown dropdown--comment-actions">
                                 <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -297,7 +321,7 @@
                                                 {% csrf_token %}
                                                 <button class="dropdown-item" type="submit">Delete</button>
                                             </form>
-    
+
                                         </li>
                                     {% else %}
                                         <li><button class="dropdown-item" type="button">Report</button></li>
@@ -305,11 +329,12 @@
                                     
                                 </ul>
                             </div>
+
                         </div>
-                    </div> 
-                {% endfor %}
-            </div>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>    
     </div>
 
 

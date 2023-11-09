@@ -1,5 +1,11 @@
 
 
+.site-title {
+    font-family: 'Bonheur Royale', cursive;
+    font-size: 4rem;
+    transform: translateY(10%);
+}
+
 .link {
     
     color:rgb(88, 168, 233);
@@ -9,10 +15,17 @@
     }
 }
 
+
+
+.header-container {
+    width: 85%;
+}
+
+
 .listing {
     &-main-info {
         min-width: 30rem;
-        max-width: 40.5rem;
+        max-width: 37.5rem;
         .watch-box {
             right: 0;
             transform: scale(0.85);
@@ -29,7 +42,7 @@
     }
     &-bid-info {
         background: #f1f3f4;
-        max-width: 25rem;
+        max-width: 20rem;
         max-height: 25rem;
         &-link {
             color:rgb(54, 54, 54);
@@ -40,7 +53,7 @@
         font-size: 0.75rem;
     }
     &-description {
-        max-width: 30rem;
+        max-width: 32rem;
     }
     &-poster-info {
         color: rgb(54, 54, 54);
@@ -96,19 +109,51 @@
     }
 }
 
-
-
-.user-icon {
-    &::before {
-        transform: translateY(50%) scale(2);
+.comment-section {
+    &--leave-commnet {
+        textarea {
+            &::placeholder {
+                font-style: italic;
+                font-size: 1.25rem;
+            }
+        }
     }
+    &--header {
+        width: 90%;
+    }
+    &--body {
+        width: 80%;
+        min-width: 40rem;
+
+        border-bottom: 1px solid #c1c1c1;
+
+        .comment-profile-icon {
+            width: 2rem;
+            .user-icon {
+                &::before {
+                    transform: translateY(70%) scale(3);
+                }
+            }
+        }
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin-left: 1rem;
+            
+            border: none;
+            background: inherit;
+        }
+        .commenter {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .comment-time {
+            color: rgb(128, 127, 127);
+            font-size: 0.75rem;
+            
+        }
+    }
+
 }
 
-.comment-section--body {
-    width: 80%;
-    min-width: 40rem;
-    textarea {
-        width: 100%;
-        padding: 0.5rem;
-    }
-}
+

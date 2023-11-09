@@ -3,13 +3,16 @@ import { watchlistBtnListen } from "./watchlist_btn.js";
 
 document.addEventListener('DOMContentLoaded', ()=>{
     
+    // Watchers tooltip 
+    const watcherTooltip = document.querySelector('span[data-bs-toggle="tooltip"]');
+    const enabledWatcherTooltip = new bootstrap.Tooltip(watcherTooltip);
 
     watchlistBtnListen();
     
     // Toggle comment editable mode
-   const commentContainers = document.querySelectorAll('.comment-section--body');
+    const commentContainers = document.querySelectorAll('.comment-section--body');
 
-   commentContainers.forEach(commentContainer => {
+    commentContainers.forEach(commentContainer => {
         
         const contentArea = commentContainer.querySelector('textarea');
         const originalCommentContent = contentArea.value;
@@ -46,9 +49,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
             editActionContainer.classList.toggle('d-none');
             dropdown.classList.toggle('d-none');
+
         });
 
    })
+
+
+  
 
 
 });
