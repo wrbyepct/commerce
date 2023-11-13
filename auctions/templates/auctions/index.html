@@ -62,21 +62,23 @@
                                     </a>
                                 </div>
                                 
-                                <div class="watch-box text-center mb-3">
-                                    <button 
-                                        class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
-                                        type="submit"
-                                        item-id="{{ listing.id }}"
-                                    >
-                                        {% if listing in user.watchlist.all %}
-                                            <i class="bi bi-heart-fill"></i>
-                                            <span>On watchlist</span>
-                                        {% else %}
-                                            <i class="bi bi-heart"></i>
-                                            <span>Watchlist</span>
-                                        {% endif %}
-                                    </button>
-                                </div>
+                                {% if user.is_authenticated %}
+                                    <div class="watch-box text-center mb-3">
+                                        <button 
+                                            class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
+                                            type="submit"
+                                            item-id="{{ listing.id }}"
+                                        >
+                                            {% if listing in user.watchlist.all %}
+                                                <i class="bi bi-heart-fill"></i>
+                                                <span>On watchlist</span>
+                                            {% else %}
+                                                <i class="bi bi-heart"></i>
+                                                <span>Watchlist</span>
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}  

@@ -36,10 +36,11 @@ Your password can’t be entirely numeric."""})
     
     birthday = forms.DateField(
         label = 'Date of Birth',
-        widget= forms.DateInput(attrs={
-            'type': 'date',
-            'title': 'Pick your birth date from the calendar or type it in YYYY-MM-DD format.'
-        }),
+        widget= forms.DateInput(
+            attrs={
+                'type': 'date',
+                'title': 'Pick your birth date from the calendar or type it in YYYY-MM-DD format.'
+            }),
         required=False
     )
     

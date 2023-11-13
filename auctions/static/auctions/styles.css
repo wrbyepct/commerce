@@ -1,11 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Nunito:ital,wght@0,400;0,600;0,800;1,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Cormorant+Infant:ital,wght@0,300;0,400;1,300;1,500;1,600;1,700&display=swap");
 :root {
   font-family: "Nunito", sans-serif;
   color: rgb(80, 80, 80);
 }
 
 body {
-  padding: 10px;
   font-family: inherit;
   font-weight: 600;
   color: inherit;
@@ -304,6 +304,56 @@ input#id_image {
 .comment-section--body .comment-time {
   color: rgb(128, 127, 127);
   font-size: 0.75rem;
+}
+
+.image-section {
+  background-image: url("../images/register-image.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: inherit;
+  flex-grow: 1;
+}
+.image-section--overlay {
+  height: 100%;
+  background-color: rgba(186, 186, 186, 0.273);
+}
+.image-section--hero {
+  color: white;
+}
+.image-section--hero-header {
+  font-family: "Bonheur Royale", cursive;
+  font-size: 10rem;
+}
+.image-section--hero .slogan {
+  font-family: "Cormorant Infant", serif;
+  font-weight: 700;
+  font-size: 5rem;
+  color: rgba(255, 204, 0, 0.963);
+  background-color: rgba(0, 0, 0, 0.333);
+}
+
+.register-section {
+  flex-grow: 1;
+  padding: 2rem 3rem;
+  max-width: 45%;
+}
+.register-section--head {
+  font-family: "Cormorant Infant", serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 5rem;
+  width: 25rem;
+  line-height: 4rem;
+}
+.register-section--logo {
+  width: 10rem;
+  height: auto;
+}
+
+.register-page-container {
+  background-color: #F6F8FA;
+  height: 100vh;
 }
 
 .nav-container .nav-tag {

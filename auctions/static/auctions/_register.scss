@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Bonheur+Royale&family=Cormorant+Infant:ital,wght@0,300;0,400;1,300;1,500;1,600;1,700&display=swap');
+
+$sm-margin: 35px;
+    
+$md-margin: 70px;
+
+
+.image-section {
+    background-image: url('../images/register-image.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: inherit;
+    flex-grow: 1;
+    &--overlay {
+        height: 100%;
+        background-color: rgba(186, 186, 186, 0.273);
+    }
+    &--hero {
+        color: white;
+        &-header {
+            font-family: 'Bonheur Royale', cursive;
+            font-size: 10rem;
+
+        }
+        .slogan {
+            font-family: 'Cormorant Infant', serif;
+            font-weight: 700;
+            font-size: 5rem;
+
+           
+            color: rgba(255, 204, 0, 0.963);
+
+            background-color: rgba(0, 0, 0, 0.333);
+        }
+    }
+}
+
+
+.register-section {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+    max-width: 45%;
+    &--head {
+        font-family: 'Cormorant Infant', serif;
+        font-style: italic;
+        font-weight: 700;
+        font-size: 5rem;
+        width: 25rem;
+
+        line-height: 4rem;       
+
+    }
+    &--logo {
+        width: 10rem;
+        height: auto;
+    }
+
+   
+}
+
+
+.register-page-container {
+    
+    background-color: #F6F8FA;
+    height: 100vh;
+    // margin: $md-margin;
+   
+}
+
+
+
+// @media (max-width: 1440px) {
+//     .register-page-container {
+//         margin: $sm-margin;
+        
+//     }
+// }
+
+// @media (max-width: 1280px) {
+//     .register-page-container {
+//         margin: 0;
+        
+//     }
+// }

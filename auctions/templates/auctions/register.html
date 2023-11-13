@@ -1,41 +1,62 @@
-{% extends "auctions/layout.html" %}
+{% extends "auctions/blank_layout.html" %}
+
+<!-- {% load static %} -->
 
 {% block body %}
-
-    <h2>Register</h2>
-
+    <!-- Message section -->
     {% if message %}
         <div>{{ message }}</div>
     {% endif %}
 
-
-    <form action="{% url 'register' %}" method="post">
-        {% csrf_token %}
-        {% for field in form %}
-        
-            <div class="form-group">
-                <label class="{% if field.field.required %}required{% else %}{% endif %}" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
+    <div class="register-page-container d-flex ">
+        <!-- Image section -->
+        <div class="image-section">
+            <div class="image-section--overlay">
+                <div class="image-section--hero d-flex flex-column">
+                    <h1 class="image-section--hero-header">D.Auction</h1>
+                    <div class="slogan text-end p-4">
+                        <div>
+                            <div>Where Every Click</div>  
+                            <div>Brings You Closer to Your</div>
+                            <div>Next Great Find </div>
+                        </div>
+                    </div>
+                    <h1>Exceptional Finds Just a Bid Away!</h1>
+                </div>
             </div>
-        {% endfor %}
+        </div>
 
-        <input class="btn btn-primary" type="submit" value="Register">
-        
-        <!-- <div class="form-group">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="email" name="email" placeholder="Email Address">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Register"> -->
-    </form>
+        <!-- Register section -->
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+        <div class="register-section ">
+            <img class="register-section--logo" src="{% static 'images/dauction-2.png' %}" alt="aution logo">
+            <h1 class="register-section--head text-center m-auto">Create a new account</h1>
+
+            <div class="mb-3">
+                <form class="register-section--form w-50 m-auto mt-5" action="{% url 'register' %}" method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    
+                        <div class="form-group mt-2">
+                            <label class="{% if field.field.required %}required{% else %}{% endif %}" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                        
+                    <div class="text-end">
+                        <input class="btn btn-primary mt-3 " type="submit" value="Register">
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="text-center fs-5 ">
+                <div>Already have an account? </div>
+                <a class="link" href="{% url 'login' %}">Log In here.</a>
+            </div>
+            
+        </div>
+    </div>
+    
+    
 
 {% endblock %}
