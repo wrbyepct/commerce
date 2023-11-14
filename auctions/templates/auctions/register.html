@@ -1,62 +1,47 @@
-{% extends "auctions/blank_layout.html" %}
+{% extends "auctions/credential_layout.html" %}
 
 <!-- {% load static %} -->
 
-{% block body %}
-    <!-- Message section -->
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+{% block credential %}
+    
+    
+    <!-- credential section -->
 
-    <div class="register-page-container d-flex ">
-        <!-- Image section -->
-        <div class="image-section">
-            <div class="image-section--overlay">
-                <div class="image-section--hero d-flex flex-column">
-                    <h1 class="image-section--hero-header">D.Auction</h1>
-                    <div class="slogan text-end p-4">
-                        <div>
-                            <div>Where Every Click</div>  
-                            <div>Brings You Closer to Your</div>
-                            <div>Next Great Find </div>
-                        </div>
+    <div class="credential-section flex-grow-1 w-45">
+        <img class="credential-section--logo" src="{% static 'images/dauction-2.png' %}" alt="aution logo">
+        <div class="text-center">
+            <h1 class="credential-section--head">Create a new</h1>
+            <h1 class="credential-section--head">account</h1>
+        </div>
+        
+            <div class="text-center py-3" style="color: rgb(246, 99, 99);">
+                {% if message %}
+                    {{ message }}
+                {% endif %}
+            </div>
+        
+        <div class="">
+            <form class="credential-section--form w-50 m-auto" action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                
+                    <div class="form-group mt-2">
+                        <label class="{% if field.field.required %}required{% else %}{% endif %}" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
                     </div>
-                    <h1>Exceptional Finds Just a Bid Away!</h1>
+                {% endfor %}
+                    
+                <div class="text-end">
+                    <input class="btn btn-dark mt-3 rounded-0 w-100 " type="submit" value="Register">
                 </div>
-            </div>
+                
+            </form>
         </div>
-
-        <!-- Register section -->
-
-        <div class="register-section ">
-            <img class="register-section--logo" src="{% static 'images/dauction-2.png' %}" alt="aution logo">
-            <h1 class="register-section--head text-center m-auto">Create a new account</h1>
-
-            <div class="mb-3">
-                <form class="register-section--form w-50 m-auto mt-5" action="{% url 'register' %}" method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                    
-                        <div class="form-group mt-2">
-                            <label class="{% if field.field.required %}required{% else %}{% endif %}" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                        </div>
-                    {% endfor %}
-                        
-                    <div class="text-end">
-                        <input class="btn btn-primary mt-3 " type="submit" value="Register">
-                    </div>
-                    
-                </form>
-            </div>
-            <div class="text-center fs-5 ">
-                <div>Already have an account? </div>
-                <a class="link" href="{% url 'login' %}">Log In here.</a>
-            </div>
-            
+        <div class="text-center fs-5 mt-2">
+            <div>Already have an account? </div>
+            <a class="link" href="{% url 'login' %}">Log In here.</a>
         </div>
+        
     </div>
     
-    
-
 {% endblock %}

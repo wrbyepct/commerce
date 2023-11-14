@@ -189,7 +189,7 @@ input#id_image {
 }
 
 .header-container {
-  width: 85%;
+  width: 80%;
 }
 
 .listing-main-info {
@@ -312,47 +312,60 @@ input#id_image {
   background-repeat: no-repeat;
   background-position: center;
   height: inherit;
-  flex-grow: 1;
 }
 .image-section--overlay {
-  height: 100%;
+  mix-blend-mode: hard-light;
   background-color: rgba(186, 186, 186, 0.273);
-}
-.image-section--hero {
-  color: white;
 }
 .image-section--hero-header {
   font-family: "Bonheur Royale", cursive;
-  font-size: 10rem;
+  font-size: 9rem;
+  color: white;
 }
 .image-section--hero .slogan {
   font-family: "Cormorant Infant", serif;
   font-weight: 700;
   font-size: 5rem;
-  color: rgba(255, 204, 0, 0.963);
-  background-color: rgba(0, 0, 0, 0.333);
+  color: rgb(252, 171, 40);
+  background-color: rgba(0, 0, 0, 0.648);
+}
+.image-section--hero .slogan .link-to-homepage {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-decoration: underline;
+  color: rgb(2, 159, 94);
+  transition: 0.15s ease-in-out;
+}
+.image-section--hero .slogan .link-to-homepage:hover {
+  color: rgb(140, 227, 191);
+  transform: scale(1.02);
 }
 
-.register-section {
-  flex-grow: 1;
-  padding: 2rem 3rem;
-  max-width: 45%;
+.w-45 {
+  min-width: 40%;
 }
-.register-section--head {
+
+.credential-section {
+  padding: 2rem 3rem;
+}
+.credential-section--head {
   font-family: "Cormorant Infant", serif;
   font-style: italic;
   font-weight: 700;
-  font-size: 5rem;
-  width: 25rem;
-  line-height: 4rem;
+  font-size: 4rem;
+  line-height: 3rem;
 }
-.register-section--logo {
+.credential-section--head h1 {
+  font-size: 5rem;
+}
+.credential-section--logo {
   width: 10rem;
   height: auto;
 }
+.credential-section .form-control {
+  border-radius: 0;
+}
 
-.register-page-container {
-  background-color: #F6F8FA;
+.credential-page-container {
   height: 100vh;
 }
 
