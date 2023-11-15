@@ -1,9 +1,10 @@
 
-
+// Image
 #dropArea {
     border: 1px solid black;
-    width: 320px;
-    height: 180px;
+    width: 30rem;
+    height: 25rem;
+
 }
 
 input#id_image {
@@ -18,3 +19,39 @@ input#id_image {
     justify-content: center;
     align-items: center;
 }
+
+#imageLabel {
+    font-family: sans-serif;
+    font-size: 3rem;
+    font-weight: bold;
+    color: rgba(168, 168, 168, 0.633);
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.listing-form {
+    width: 100%;
+    .form-field {
+        margin-top: 0.5rem;
+    }
+    input[name=title] {
+        padding: 0.25rem 0.5rem;
+    }
+    // Description 
+    textarea[name=description] {
+        width: 100%;
+        resize: none;
+        padding: 0.5rem;
+    }
+
+    // Category 
+    select {
+        width: 12rem;
+        option {
+            padding: 0.25rem
+        }
+    }
+}
+
+

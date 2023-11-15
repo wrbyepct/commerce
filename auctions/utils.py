@@ -49,6 +49,7 @@ def only_contains_word_or_empty_string(string):
     match = pattern.fullmatch(string=string)
     return True if match else False
 
+
 def get_unsplash_img_url(query):
     url = 'https://api.unsplash.com/search/photos'
     params = {

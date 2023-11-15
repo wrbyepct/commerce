@@ -37,7 +37,7 @@ function uploadImageEventHandler(e) {
     const imageInput = document.getElementById('id_image');
 
     if (e.type == "drop") {
-        // If event if drop, we just need this extra step to assign file to image input field
+        // If event is drop, we just need this extra step to assign file to image input field
         // The event target would be 'dropArea'
         imageInput.files = e.dataTransfer.files;
     } 
@@ -52,7 +52,7 @@ function uploadImageEventHandler(e) {
 document.addEventListener('DOMContentLoaded', ()=> {
     const dropArea = document.getElementById('dropArea');
 
-    // Seeting up drag and drop effect for image upload box 
+    // Seeting up drag and drop border effect for image upload box 
     addListEventAction(
         dropArea, 
         ['dragenter', 'dragover'], 

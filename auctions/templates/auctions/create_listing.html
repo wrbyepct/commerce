@@ -8,61 +8,76 @@
 {% endblock %}
 
 {% block body %}
-
-    <h2>Post a new auction</h2>
-
+<!-- Message Section  -->
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
                 {{ message }}
-                                      <!-- BooStrap class and script -->
+                                    <!-- BooStrap class and script -->
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-               
+            
             </div>
         {% endfor %}
     {% endif %}
+
+<!-- Form Section -->
+    <div class="container d-flex flex-column align-items-center">
+        <h2>Post Your Listing</h2>
+
     
-    <form action="{% url 'create' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-field">
-            {{ form.title.label_tag }}
-            {{ form.title }}
-        </div>
-        <div class="form-field">
-            <div>
-                {{ form.description.label_tag }}
+        <form class="listing-form" action="{% url 'create' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="container d-flex gap-3 flex-wrap-reverse align-items-end">
+                <!-- Image Section  -->
+                <div id="dropArea" >
+                    <div id="dragArea">
+                        {{ form.image }}  <!-- Currently hidden -->
+                        <!-- label with the image id will take up its function -->
+                        <div class="d-flex flex-column align-items-center">
+                            <label id="imageLabel" for="{{ form.image.id_for_label }}">
+                                <span>Upload Image</span>
+                            </label>
+                            <span>(optional)</span>
+                        </div>
+                        
+                    </div>
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
+                </div>
+                
+                <!-- Form Section -->
+                <div class="flex-grow-1" >
+                    <div class="form-field d-flex flex-column">
+                        <div>{{ form.title.label_tag }}</div>
+                        {{ form.title }}
+                    </div>
+                    <div class="form-field d-flex flex-column">
+                        <div>
+                            {{ form.description.label_tag }}
+                        </div>
+                        {{ form.description }}
+                    </div>
+                    <div class="form-field">
+                        <div>{{ form.starting_bid.label_tag }}</div>
+                        {{ form.starting_bid }}
+                    </div>
+                    <div class="mt-3">
+                        <h4>Optional:</h4>
+                    </div>
+                    <div class="form-field">
+                        {{ form.category.label_tag }}
+                        {{ form.category }}
+                    </div>
+                    <div class="form-field">
+                        {{ form.new_category.label_tag }}
+                        {{ form.new_category }}
+                    </div>
+                    <input class="btn btn-dark mt-2 rounded-0 " type="submit" value="POST">
+                </div>
             </div>
-            {{ form.description }}
-        </div>
-        <div class="form-field">
-            {{ form.starting_bid.label_tag }}
-            {{ form.starting_bid }}
-        </div>
-        <div>
-            <h4>Opetional:</h4>
-        </div>
-        <div class="form-field">
-            {{ form.category.label_tag }}
-            {{ form.category }}
-        </div>
-        <div class="form-field">
-            {{ form.new_category.label_tag }}
-            {{ form.new_category }}
-        </div>
-        
-        <div id="dropArea">
-            <div id="dragArea">
-                {{ form.image }}  <!-- Currently hidden -->
-                <!-- label with the image id will take up its function -->
-                <label id="imageLabel" for="{{ form.image.id_for_label }}">
-                    <span>Upload Image</span>
-                </label>
-            </div>
-            <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width: 320px; height: 180px;">
-        </div>
-        
-        <input class="btn btn-primary" type="submit" value="Post">
-    </form>
+        </form>
+
+    </div>
+    
 
    
 

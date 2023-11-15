@@ -127,7 +127,7 @@ def create_listing(request):
             res = listing.save(failed_message=LISTING_NOT_UNIQUE)
             
             if res['status'] == 'failed':
-                messages.error(request, res['message'])  
+                messages.error(request, res['failed_message'])  
             
             else:    
     

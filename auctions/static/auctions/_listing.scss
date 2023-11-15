@@ -15,9 +15,9 @@
 
 .listing {
     @media (min-width: 1470px) {
-        &-image-info {
-            width: 40rem;
-        }
+        // &-image-info {
+        //     width: 40rem;
+        // }
         &-main-info {
             min-width: 30rem;
             max-width: 37.5rem;
@@ -52,11 +52,11 @@
     }
 
     &-image-info {
+        width: 40rem;
         height: 40rem;
     }
     
     &-main-info {
-        
         .watch-box {
             right: 0;
             transform: scale(0.85);

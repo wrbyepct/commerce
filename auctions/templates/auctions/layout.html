@@ -14,6 +14,7 @@
     <body>
         <!-- Header -->
         <div class="header-container d-flex justify-content-between align-items-center m-auto" >
+            <!-- Logo -->
             <div class="site-title d-flex align-items-center fw-lighter">
                 <span>D.Auction</span>
                 <img src="{% static 'images/dauction-2.png' %}" alt="logo" style="height: 5.5rem;">
@@ -25,20 +26,20 @@
                             <span class="greeting-user">Hi! <strong>{{user.username}}</strong>👋</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="py-2 px-3">
+                            <li class="py-2 px-3 profile-nav-hover">
                                 <a class="d-flex" href="{% url 'my_postings' %}">
                                     <i class="bi bi-palette2"></i>
                                     <span class="pt-1 ps-2 "> My Postings</span> 
                                 </a>
                             </li>
-                            <li class="py-2 px-3">
+                            <li class="py-2 px-3 profile-nav-hover">
                                 <a class="d-flex " href="{% url 'create' %}">
                                     <i class="bi bi-plus-square"></i>
                                     <span class="pt-1 ps-2"> Create Listing</span>
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li class="py-2 px-3">
+                            <li class="py-2 px-3 profile-nav-hover">
                                 <a class="d-flex" href="{% url 'logout' %}">
                                     <i class="bi bi-box-arrow-right" style="font-size: 18px; padding-left: 1px"></i>
                                     <span class="pt-1 ps-2 "> Log Out</span>   
