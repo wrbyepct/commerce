@@ -24,6 +24,8 @@
     
     .category-box {
         height: 20rem;
+
+        // Maintain image readability, don't go too small or big
         max-width: 31.125rem;
         min-width: 25.625rem;
         .card {
@@ -32,7 +34,7 @@
             &:hover {
                 scale: (1.01);
                 .text-overlay {
-                    background: rgba(255, 255, 255, 0.4); /* Black overlay with 50% opacity */
+                    height: 100%;
                 }
             }
         }
@@ -41,9 +43,11 @@
             height: inherit;
         }
         .text-overlay {
-            background: rgba(255, 255, 255, 0.2); /* Black overlay with 50% opacity */
-            
+            background: rgba(216, 216, 216, 0.683);
+            height: 20%;
+            transition: all 0.15s ease-in-out;
         }
+       
     }
 
 }

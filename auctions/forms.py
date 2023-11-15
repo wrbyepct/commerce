@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 import decimal
 from .models import User, AuctionListing, Category, Bid, Comment
-from .utils import only_contains_word_or_empty_string
+from .utils import only_contains_word_or_empty_string, get_unsplash_img_url
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
@@ -93,7 +93,16 @@ class NewListingForm(forms.ModelForm):
         # Check if the name has already existed
         if new_cate != "":
             try:
-                category = Category(name=new_cate)
+                if Category.objects.filter(name=new_cate).exists():
+                    raise ValidationError('The same category name has already existed')
+                # Get Unsplash Image for new category 
+            
+                url = get_unsplash_img_url(new_cate)
+                
+                if url is None:
+                    raise ValidationError("Can't find image for new category")
+            
+                category = Category(name=new_cate, img_url=url)
                 category.save()
                 return category # The instance returns the name of the category
             except IntegrityError:
@@ -137,7 +146,7 @@ class PlaceBidForm(forms.ModelForm):
         user_input_value = self.cleaned_data['price']
         
         if user_input_value < custom_min_value:
-            raise ValidationError('Your bid should be higher than current price')
+            raise ValidationError('Your bid should be higher than the current price')
         
         return user_input_value
    

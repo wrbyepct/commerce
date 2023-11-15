@@ -104,7 +104,7 @@
             <div class="d-flex justify-content-between">
                 <span>Current bid</span>
                 <!-- How many bids -->
-                <span><a class="link ps-2" href="{% url 'bids' listing.id %}">{{ total_bids }} bids</a> </span>
+                <span><a class="link ps-2" href="{% url 'bids'%}">{{ total_bids }} bids</a> </span>
             </div>
             {% with price=listing.current_bid.price|split_integer_and_decimal %}
                 <div class="d-flex pricing-box mb-5">
@@ -217,8 +217,7 @@
             </div>
 
             <!-- Winnder container -->
-            
-            {% if listing.winner and listing.winner == user %}
+            {% if listing.winner and listing.winner == user and list %}
                 <div class="text-center mt-4">
                     <h4 class="congrats">Congratulations 🎉</h4>
                     <strong>You won the bid!</strong>

@@ -43,7 +43,8 @@ def create_default_category(sender, **kargs):
     except InterruptedError:
         pass
 
-
+# For checking category creation input
+# Only accept english characters and contains no spaces
 def only_contains_word_or_empty_string(string):
     pattern = re.compile(r"[a-z]*", flags=re.IGNORECASE)
     match = pattern.fullmatch(string=string)

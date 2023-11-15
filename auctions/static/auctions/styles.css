@@ -130,14 +130,16 @@ input#id_image {
   scale: 1.01;
 }
 .cate-container .category-box .card:hover .text-overlay {
-  background: rgba(255, 255, 255, 0.4); /* Black overlay with 50% opacity */
+  height: 100%;
 }
 .cate-container .category-box .category-btn {
   font-size: 2rem;
   height: inherit;
 }
 .cate-container .category-box .text-overlay {
-  background: rgba(255, 255, 255, 0.2); /* Black overlay with 50% opacity */
+  background: rgba(216, 216, 216, 0.683);
+  height: 20%;
+  transition: all 0.15s ease-in-out;
 }
 
 .container-watchlist {
@@ -534,14 +536,4 @@ input#id_image {
 .card-box .description {
   color: rgba(75, 75, 75, 0.733);
   font-size: 0.875rem;
-}
-
-.pricing-box {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
-}
-.pricing-box .price-integer {
-  line-height: 1;
-  font-size: 2rem;
-  font-weight: 600;
 }/*# sourceMappingURL=styles.css.map */

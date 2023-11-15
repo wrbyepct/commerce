@@ -161,18 +161,19 @@ def create_listing(request):
 def categories(request):
     query = request.GET.get('category')
     
-    if query is None:
+    if query is None: # Meaning the user is requesting categories page that shows all cates
         categories = Category.objects.all().order_by('-id')
         
-        # Get img url for each category name 
-        cate_data = []
+        # Get img url for each category name if url does not exist
         for category in categories:
-            cate_name = category.name
-            url = get_unsplash_img_url(cate_name)
-            cate_data.append({'name': cate_name, 'url': url} )       
+            if category.img_url == "" or not category.img_url:
+                url = get_unsplash_img_url(category)
+                category.img_url = url
+                category.save()       
         
-        return render(request, 'auctions/categories.html', {'categories': cate_data})
+        return render(request, 'auctions/categories.html', {'categories': categories})
     
+    # Otherwise the user is requesting specific category listings
     category = Category.objects.get(name=query)
     listings = AuctionListing.objects.filter(category=category, status='open')
     return render(request, 'auctions/index.html', {'listings': listings})
@@ -180,11 +181,13 @@ def categories(request):
 
 
 @require_GET
-def bids_on_item(request, listing_id):
+def bids_on_item(request):
     
     
-    if not AuctionListing.objects.filter(id=listing_id).exists():
-        return HttpResponseForbidden('The item with this id does not exist')
+    listing_id = request.session.get('current_page_listing')
+        
+    if listing_id is None:
+        return HttpResponseForbidden("listing ID has lost")
     
     listing = AuctionListing.objects.get(id=listing_id)
     bids = listing.bids.all().order_by('-price')
@@ -222,11 +225,11 @@ def listing_page(request, listing_id):
             3. Comment empty form 
             4. All commnets of this listing.
     """
-    # Save listing ID in user session for later use.(Comment, close, place bid etc.)
-    if request.user.is_authenticated:
-        request.session['current_page_listing'] = listing_id
+    # Save listing ID in user session for later use.(Comment, close, place, show bid etc.)
+    
+    request.session['current_page_listing'] = listing_id
         
-    # Handle GET method
+    # Listing instance 
     listing = AuctionListing.objects.get(id=listing_id)
     
     # Provide minimal bid
@@ -332,11 +335,12 @@ def close_auction(request):
     Required: 
         1. current listing 
         2. highest bid user 
+        3. highest bid user != poster
     Action:
         1. Update listing winner 
         2. Update listing status
     """
-    
+    # Get current listing 
     listing_id = request.session.get('current_page_listing')
     if listing_id is None:
         return HttpResponseForbidden('Listing ID is somehow None')
@@ -345,9 +349,9 @@ def close_auction(request):
     
     highest_bid = Bid.objects.filter(auction_listing=listing_id).order_by('-price').first()
     
-    winner = highest_bid.user
-    
-    listing.winner = winner 
+    if highest_bid.user != request.user:
+        listing.winner = highest_bid.user
+        
     listing.status = 'closed'
     
     listing.save()
