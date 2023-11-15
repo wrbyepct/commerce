@@ -1,0 +1,30 @@
+
+.info-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+
+    margin-left: 0.25rem;
+    display: inline-block;
+
+    padding: 0.125rem 0.75rem;
+    border-radius: 25px;
+    
+    &--poster {
+        
+        background: rgb(43, 43, 43);
+        
+    }
+    &--winner {
+        background: rgb(43, 214, 123);
+    }
+    &--opening-price {
+        background: rgb(9, 156, 219);
+    }
+}
+
+.record-title {
+    font-family: 'Cormorant Infant', serif;
+    font-weight: 700;
+    font-size: 3rem;
+}

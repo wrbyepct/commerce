@@ -34,6 +34,7 @@
                     {% for listing in listings %}
                         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                             <div class="listing card d-flex justify-content-between card-box">
+                                <!-- Image  -->
                                 <div class="listing-img-box">
                                     <a href="{% url 'listing' listing.id %}">
             
@@ -62,7 +63,8 @@
                                     </a>
                                 </div>
                                 
-                                {% if user.is_authenticated %}
+                                <!-- Watchlist -->
+                                {% if user.is_authenticated and user != listing.poster %}
                                     <div class="watch-box text-center mb-3">
                                         <button 
                                             class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 

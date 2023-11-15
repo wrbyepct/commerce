@@ -180,11 +180,11 @@ def categories(request):
 
 
 @require_GET
-def bids_on_item(request):
+def bids_on_item(request, listing_id):
     
-    listing_id = request.session.get('current_page_listing')
-    if listing_id is None:
-        return HttpResponseForbidden('The listing ID has somehow lost')
+    
+    if not AuctionListing.objects.filter(id=listing_id).exists():
+        return HttpResponseForbidden('The item with this id does not exist')
     
     listing = AuctionListing.objects.get(id=listing_id)
     bids = listing.bids.all().order_by('-price')

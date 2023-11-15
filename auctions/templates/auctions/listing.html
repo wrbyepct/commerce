@@ -23,30 +23,12 @@
     {% endif %}
 
     
-    <!-- User authorized Actions -->
-    {% if user.id == listing.poster.id and listing.status == 'open' %}
-        <!-- Poster only: Close & Cancel Auction Buttons -->
-        <div id="listing-owner-container" class="flex-box flex-box--listing-owner-box">
-            <form action="{% url 'close_auction' %}" method="post">
-                {% csrf_token %}
-                
-                <button class="btn btn-primary" type="submit">Close acution</button>
-            </form>
-
-            <form action="{% url 'cancel_auction' %}" method="post">
-                {% csrf_token %}
-                
-                <button class="btn btn-danger" type="submit">Cancel acution</button>
-            </form>
-
-        </div>
-        
-    {% endif %}
+    
     
     <!-- Listing body  -->
-    <div class="container-fluid d-flex flex-wrap justify-content-center">
+    <div class="container-fluid d-flex flex-wrap justify-content-center ">
         <!-- Image info -->
-        <div class="card" style="height: 40rem; width: 40rem;">
+        <div class="card listing-image-info">
             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
             <img 
                 src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
@@ -58,7 +40,7 @@
         <!-- Main info -->
         <div class="flex-grow-1 position-relative listing-main-info ms-3">
            <!-- Watchist Button -->
-           {% if user.is_authenticated %}
+           {% if user.is_authenticated and user != listing.poster %}
                 <div class="watch-box mb-3 position-absolute top-0 ">
                     <button 
                         class="watchlist-btn btn {% if listing in user.watchlist.all %}btn-danger{% else %}btn-outline-dark{% endif %}" 
@@ -122,7 +104,7 @@
             <div class="d-flex justify-content-between">
                 <span>Current bid</span>
                 <!-- How many bids -->
-                <span><a class="link ps-2" href="{% url 'bids' %}">{{ total_bids }} bids</a> </span>
+                <span><a class="link ps-2" href="{% url 'bids' listing.id %}">{{ total_bids }} bids</a> </span>
             </div>
             {% with price=listing.current_bid.price|split_integer_and_decimal %}
                 <div class="d-flex pricing-box mb-5">
@@ -133,7 +115,7 @@
             {% endwith %}
             
             
-            <!-- Status -->
+            <!-- Status Display -->
             <div class="status-box">
                 {% if listing.status == 'open' %}
                     <span class="status-tag status-tag-active">
@@ -175,6 +157,25 @@
                             
                         </form>
                     </div>
+                </div>
+            {% endif %}
+
+            <!-- Listing owner authorized Actions -->
+            {% if user.id == listing.poster.id and listing.status == 'open' %}
+                <!-- Poster only: Close & Cancel Auction Buttons -->
+                <div id="listing-owner-container" class="d-flex justify-content-evenly mt-5">
+                    <form action="{% url 'close_auction' %}" method="post">
+                        {% csrf_token %}
+                        
+                        <button class="btn btn-outline-dark rounded-0" type="submit">Close acution</button>
+                    </form>
+
+                    <form action="{% url 'cancel_auction' %}" method="post">
+                        {% csrf_token %}
+                        
+                        <button class="btn btn-danger rounded-0 " type="submit">Cancel acution</button>
+                    </form>
+
                 </div>
             {% endif %}
 
@@ -230,7 +231,7 @@
     <!-- Comment Section -->
     <div class="container mt-5 pt-3 border-top comment-section ">
         
-        <!-- Comment form -- Authentication required -->
+        <!-- Leave Comment form -- Authentication required -->
         {% if user.is_authenticated %}
             <div>
                 <div class="comment-section--leave-commnet w-75 m-auto ">
@@ -255,6 +256,7 @@
             </div>
         {% endif %}
         
+        <!-- Comment content Section -->
         <div class="commnet-section--container">
             <!-- Comment header -->
             <div class="comment-section--header m-auto mb-4">
@@ -273,9 +275,13 @@
                             <!-- Comment Main Info -->
                             <div class="flex-grow-1">
                                 <!-- Author & Time -->
-                                <div class="comment-section--comment-info d-flex">
+                                <div class="comment-section--comment-info d-flex"> 
                                     <div class="ms-4">
-                                        <span class="commenter">{{ comment.user.username }} {% if comment.user == listing.poster %}<span>author</span>{% endif %}</span>
+                                        <span class="commenter">{{ comment.user.username }} 
+                                            {% if comment.user == listing.poster %}
+                                                <span class="info-tag info-tag--poster">listing poster</span>
+                                            {% endif %}
+                                        </span>
                                         <span class="comment-time">
                                             {{ comment.updated_at|naturaltime }} {% if comment.edited %}<span>(edited)</span>{% endif %}
                                         </span>

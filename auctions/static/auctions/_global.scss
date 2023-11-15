@@ -35,20 +35,28 @@ img {
     display: none !important;
 }
 
-
-
-
-@media (min-width: 992px) {
-    .nav-container {
-        width: 85%;
+.link {
+    
+    color:rgb(88, 168, 233);
+    &:hover{
+        text-decoration: underline; 
+        color: rgb(255, 119, 0);
     }
 }
 
-@media (min-width: 768px) {
-    .nav-container {
-        width: 90%;
-    }
-}
+
+
+// @media (min-width: 992px) {
+//     .nav-container {
+//         width: 85%;
+//     }
+// }
+
+// @media (min-width: 768px) {
+//     .nav-container {
+//         width: 90%;
+//     }
+// }
 
 
 
