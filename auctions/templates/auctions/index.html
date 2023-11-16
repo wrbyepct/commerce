@@ -16,7 +16,7 @@
         <h2 class="mx-auto">Active Listings</h2>
     </div>
     
-
+    <!-- Message Section -->
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
@@ -27,6 +27,7 @@
         {% endfor %}
     {% endif %}
 
+    <!-- All Listings -->
     <div class="container">
         {% if listings %}
             
@@ -34,17 +35,17 @@
                     {% for listing in listings %}
                         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
                             <div class="listing card d-flex justify-content-between card-box">
-                                <!-- Image  -->
+                                <!-- Card   -->
                                 <div class="listing-img-box">
                                     <a href="{% url 'listing' listing.id %}">
-            
+                                        <!-- Immage -->
                                         <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
                                         <img 
                                             src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
                                             alt="{{ listing.description }}"
                                             onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
                                         >
-                                        
+                                        <!-- Product info  -->
                                         <div class="product-info card-body">
                                             <h4>{{listing.title}}</h4>
                                             
@@ -63,7 +64,7 @@
                                     </a>
                                 </div>
                                 
-                                <!-- Watchlist -->
+                                <!-- Watchlist button -->
                                 {% if user.is_authenticated and user != listing.poster %}
                                     <div class="watch-box text-center mb-3">
                                         <button 
@@ -73,10 +74,10 @@
                                         >
                                             {% if listing in user.watchlist.all %}
                                                 <i class="bi bi-heart-fill"></i>
-                                                <span>On watchlist</span>
+                                                <span>WATCHING</span>
                                             {% else %}
                                                 <i class="bi bi-heart"></i>
-                                                <span>Watchlist</span>
+                                                <span>WATCH</span>
                                             {% endif %}
                                         </button>
                                     </div>
@@ -85,9 +86,7 @@
                         </div>
                     {% endfor %}  
                 </div>
-                
-                
-              
+            
         {% endif %}
     </div>
     

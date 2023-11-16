@@ -260,7 +260,7 @@ input#id_image {
   height: 40rem;
 }
 .listing-main-info .watch-box {
-  right: 0;
+  right: -3%;
   transform: scale(0.85);
 }
 .listing-title {
@@ -373,7 +373,6 @@ input#id_image {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  height: inherit;
 }
 .image-section--overlay {
   mix-blend-mode: hard-light;
@@ -405,10 +404,6 @@ input#id_image {
   transform: scale(1.02);
 }
 
-.w-45 {
-  min-width: 40%;
-}
-
 .credential-section {
   padding: 2rem 3rem;
 }
@@ -430,7 +425,11 @@ input#id_image {
   border-radius: 0;
 }
 
-.credential-page-container {
+.w-35 {
+  min-width: 35%;
+}
+
+.vh-100 {
   height: 100vh;
 }
 
@@ -536,4 +535,11 @@ input#id_image {
 .card-box .description {
   color: rgba(75, 75, 75, 0.733);
   font-size: 0.875rem;
+}
+
+.watchlist-btn {
+  font-size: 0.875rem;
+}
+.watchlist-btn i::before {
+  padding-bottom: 2px;
 }/*# sourceMappingURL=styles.css.map */

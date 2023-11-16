@@ -43,7 +43,7 @@ export function watchlistBtnListen() {
 
                         // Change watchlist text and content
                         watchlistBtn.textContent = "";  
-                        buttonText.textContent = ' On watchlist';
+                        buttonText.textContent = ' WATCHING';
                         icon.className = 'bi bi-heart-fill';
                         
                         // Update watachlist counter indicator
@@ -65,7 +65,7 @@ export function watchlistBtnListen() {
                         watchlistBtn.classList.remove('btn-danger');
 
                         watchlistBtn.textContent = "";
-                        buttonText.textContent = ' Watchlist';
+                        buttonText.textContent = ' WATCH';
                         icon.className = 'bi bi-heart';
         
                         // Update watachlist counter indicator

@@ -19,8 +19,12 @@
                 <span>D.Auction</span>
                 <img src="{% static 'images/dauction-2.png' %}" alt="logo" style="height: 5.5rem;">
             </div>
+
+            <!-- Login & Profile nav -->
             <div class="pt-3">
+                
                 {% if user.is_authenticated %}
+                <!-- User logged-in -->
                     <div class="dropdown">
                         <button class="btn dropdown-toggle d-flex flex-row align-items-center p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="greeting-user">Hi! <strong>{{user.username}}</strong>👋</span>
@@ -49,6 +53,7 @@
                         </ul>
                     </div>
                 {% else %}
+                <!-- Not Logged-in -->
                     <div class="d-flex account-actions">
                         <a href="{% url 'login' %}">
                             <span class="login-text">Log in</span>
@@ -62,7 +67,7 @@
             </div>
         </div>
 
-        <!-- Navs -->
+        <!-- Action Navs: Active listings Categories -->
         <div class="nav-container container-fluid w-100 border-top border-bottom pt-2 pb-3 my-3">
             <div class="d-flex justify-content-center ">
                 
@@ -75,6 +80,7 @@
                     <a class="nav-item" href="{% url 'categories' %}">CATEGORIES</a>
                 </div>
                 {% if user.is_authenticated %}
+                <!-- Watchlist Option -- For logged-in user -->
                     <div class=" d-flex align-items-center nav-tag">
                         <i class="bi bi-bag"></i>
                         <a class="nav-watchlist nav-item" href="{% url 'watchlist' %}">WATCHLIST 

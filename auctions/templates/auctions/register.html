@@ -4,39 +4,41 @@
 
 {% block credential %}
     
-    
-    <!-- credential section -->
+    <!-- Credential Section -->
 
-    <div class="credential-section flex-grow-1 w-45">
+    <div class="credential-section flex-grow-1 w-35 vh-100 ">
         <img class="credential-section--logo" src="{% static 'images/dauction-2.png' %}" alt="aution logo">
+        <!-- Create Accrount Prompt -->
         <div class="text-center">
             <h1 class="credential-section--head">Create a new</h1>
             <h1 class="credential-section--head">account</h1>
         </div>
         
-            <div class="text-center py-3" style="color: rgb(246, 99, 99);">
-                {% if message %}
-                    {{ message }}
-                {% endif %}
-            </div>
-        
-        <div class="">
-            <form class="credential-section--form w-50 m-auto" action="{% url 'register' %}" method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                
-                    <div class="form-group mt-2">
-                        <label class="{% if field.field.required %}required{% else %}{% endif %}" for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }}
-                    </div>
-                {% endfor %}
-                    
-                <div class="text-end">
-                    <input class="btn btn-dark mt-3 rounded-0 w-100 " type="submit" value="Register">
-                </div>
-                
-            </form>
+        <!-- Wrong Crendential Message -->
+        <div class="text-center py-3" style="color: rgb(246, 99, 99);">
+            {% if message %}
+                {{ message }}
+            {% endif %}
         </div>
+        
+        <!-- Register Form -->
+        <form class="credential-section--form w-50 m-auto" action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            
+                <div class="form-group mt-2">
+                    <label class="{% if field.field.required %}required{% else %}{% endif %}" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+                
+            <div class="text-end">
+                <input class="btn btn-dark mt-3 rounded-0 w-100 " type="submit" value="Register">
+            </div>
+            
+        </form>
+        
+        <!-- Sign in Prompt -->
         <div class="text-center fs-5 mt-2">
             <div>Already have an account? </div>
             <a class="link" href="{% url 'login' %}">Sign in here</a>

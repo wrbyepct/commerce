@@ -41,6 +41,8 @@
     }
 }
 
+// Profile Navs
+
 .dropdown {
     
     &--comment-actions{
@@ -102,9 +104,17 @@
         color: rgba(75, 75, 75, 0.733);
         font-size: 0.875rem;
     }
-
+    
 }
 
+.watchlist-btn {
+    font-size: 0.875rem;
+    i {
+        &::before {
+            padding-bottom: 2px;
+        }
+    }
+}
 
 
 

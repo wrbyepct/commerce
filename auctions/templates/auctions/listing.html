@@ -22,11 +22,8 @@
         {% endfor %}
     {% endif %}
 
-    
-    
-    
     <!-- Listing body  -->
-    <div class="container-fluid d-flex flex-wrap justify-content-center ">
+    <div class="container-fluid d-flex flex-wrap justify-content-center gap-3">
         <!-- Image info -->
         <div class="card listing-image-info">
             <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
@@ -49,10 +46,10 @@
                     >
                         {% if listing in user.watchlist.all %}
                             <i class="bi bi-heart-fill"></i>
-                            <span>On watchlist</span>
+                            <span>WATCHING</span>
                         {% else %}
                             <i class="bi bi-heart"></i>
-                            <span>Watchlist</span>
+                            <span>WATCH</span>
                         {% endif %}
                     </button>
                 </div>
@@ -250,7 +247,7 @@
                 </div>
                 <div>
                     <span>Don't have an account?</span>
-                    <a class="link ps-2" href="{% url 'register' %}">Register here!</a>
+                    <a class="link ps-2" href="{% url 'register' %}">Sign up here!</a>
                 </div>
             </div>
         {% endif %}
@@ -337,7 +334,7 @@
 
                         </div>
                     {% endfor %}
-                </div>
+                
             {% endif %}
         </div>    
     </div>
