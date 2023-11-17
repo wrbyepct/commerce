@@ -318,8 +318,6 @@ def place_bid(request):
 @login_required
 @require_POST
 def toggle_watchlist(request, listing_id):
-    print_normal_message(listing_id)
-    
     listing = get_object_or_404(AuctionListing, id=listing_id)
     user = request.user
     
@@ -479,29 +477,27 @@ def save_changed_comment(request, comment_id):
     
     listing_id = request.session.get('current_page_listing')
     if listing_id is None:
-        messages.error(request, "The lisitng ID has somehow lost.")
+        return HttpResponseForbidden("The lisitng ID has somehow lost.")
+       
+
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    # Check if the user is the authour of the comment 
+    if comment.user != request.user:
+        return HttpResponseForbidden("You are not authorized to edit this comment")
+    
+    form = CommentForm(request.POST)
+    if form.is_valid():
         
+        edited_comment = form.cleaned_data['content']
         
+        comment.content = edited_comment
+        comment.edited = True 
+        
+        comment.save()
+    
     else:
-        comment = get_object_or_404(Comment, id=comment_id)
-        
-        # Check if the user is the authour of the comment 
-        if comment.user != request.user:
-            return HttpResponseForbidden("You are not authorized to edit this comment")
-        
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            
-            edited_comment = form.cleaned_data['content']
-            
-            comment.content = edited_comment
-            comment.edited = True if not comment.edited else comment.edited
-            
-            comment.save()
-            messages.success(request, f"comment form is valid. Content: {form.cleaned_data['content']}, comment edited: {comment.edited}")
-        
-        else:
-            messages.error(request, 'comment form is NOT valid') 
+        messages.error(request, 'comment form is NOT valid') 
             
     return redirect(reverse('listing', args=[listing_id]))
     
