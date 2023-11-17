@@ -15,8 +15,11 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Uploaded image default path
-MEDIA_URL = 'media/' # image url will be this string plus with the name, which is 'uploaded to' + filename
+MEDIA_URL = '/media/' # image url will be this string plus with the name, which is 'uploaded to' + filename
 MEDIA_ROOT = os.path.join(BASE_DIR, 'auctions/media') # Saved path
 
 # Quick-start development settings - unsuitable for production
