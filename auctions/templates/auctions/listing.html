@@ -272,12 +272,14 @@
                             <div class="flex-grow-1">
                                 <!-- Author & Time -->
                                 <div class="comment-section--comment-info d-flex"> 
-                                    <div class="ms-4">
-                                        <span class="commenter">{{ comment.user.username }} 
-                                            {% if comment.user == listing.poster %}
-                                                <span class="info-tag info-tag--poster">listing poster</span>
-                                            {% endif %}
+                                    <div class="ms-4 d-flex align-items-center gap-1">
+                                        <span class="commenter">
+                                            {{ comment.user.username }}
+                                            
                                         </span>
+                                        {% if comment.user == listing.poster %}
+                                            <span class="info-tag info-tag--poster d-inline-block me-1">listing poster</span>
+                                        {% endif %}
                                         <span class="comment-time">
                                             {{ comment.updated_at|naturaltime }} {% if comment.edited %}<span>(edited)</span>{% endif %}
                                         </span>

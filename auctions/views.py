@@ -238,7 +238,7 @@ def listing_page(request, listing_id):
     place_bid_form = PlaceBidForm(custom_min_value=minimal_bid)
     
     comment_form = CommentForm()
-    comments = listing.comments.all()
+    comments = listing.comments.all().order_by('-created_at')
 
     total_bids = listing.bids.count()
     return render(
@@ -254,41 +254,40 @@ def listing_page(request, listing_id):
     
 
 @login_required
+@require_POST
 def place_bid(request):
-    if request.method == 'POST':
-        # Check lising id first
+    
+    # Check lising id first
+    listing_id = request.session.get('current_page_listing')
+    if listing_id is None:
+        return HttpResponseForbidden("listing ID has lost")
+    
+    listing = AuctionListing.objects.get(id=listing_id)
+    
+    minimal_bid = listing.current_bid.price + Decimal('0.01')
+    form = PlaceBidForm(request.POST, custom_min_value=minimal_bid)
+    
+    if form.is_valid(): 
         
-        listing_id = request.session.get('current_page_listing')
+        bid = form.cleaned_data['price']
         
-        if listing_id is None:
-            return HttpResponseForbidden("listing ID has lost")
+        # Save the new bid 
+        new_bid = Bid.objects.create(
+            auction_listing = listing,
+            user = request.user,
+            price = bid
+        )
+        new_bid.save()
         
-        listing = AuctionListing.objects.get(id=listing_id)
+        # update the listing current bid 
+        listing.current_bid= new_bid
+        listing.save()
         
-        minimal_bid = listing.current_bid.price + Decimal('0.01')
-        form = PlaceBidForm(request.POST, custom_min_value=minimal_bid)
-        
-        if form.is_valid(): 
-            
-            bid = form.cleaned_data['price']
-            
-            # Save the new bid 
-            new_bid = Bid.objects.create(
-                auction_listing = listing,
-                user = request.user,
-                price = bid
-            )
-            new_bid.save()
-            
-            # update the listing current bid 
-            listing.current_bid= new_bid
-            listing.save()
-            
-            messages.success(request, f'Placed bid successfully! Your bid: {bid}')
-            return redirect(reverse('listing', args=[listing_id]))
-        else:
-            messages.error(request, f"Not valid form: {form.errors.as_text()}")
-            return redirect(reverse('listing', args=[listing_id]))
+        messages.success(request, f'Placed bid successfully! Your bid: {bid}')
+        return redirect(reverse('listing', args=[listing_id]))
+    else:
+        messages.error(request, f"Not valid form: {form.errors.as_text()}")
+        return redirect(reverse('listing', args=[listing_id]))
 
 
 @login_required
@@ -358,6 +357,7 @@ def close_auction(request):
     
     return redirect(reverse('listing', args=[listing_id]))
 
+
 @login_required
 @require_POST
 def cancel_auction(request):
@@ -413,8 +413,6 @@ def post_comment(request):
         if res['status'] == 'failed':
             messages.error(request, res['failed_message'])
             
-        else:
-            messages.success(request, f"The comment form is correct! your comment: {content}")
         
     else:
         messages.error(request, form.errors.as_text())
@@ -441,11 +439,9 @@ def delete_comment(request, comment_id):
         comment = get_object_or_404(Comment, id=comment_id)
         
         if comment.user != request.user:
-            return HttpResponseForbidden("You are not authorized to edit this comment")
+            return HttpResponseForbidden("You are not authorized to delete this comment")
         
-        else:
-            comment.delete()
-            messages.success(request, 'Successfully deleted your comment!')
+        comment.delete()
             
     return redirect(reverse('listing', args=[listing_id]))
 

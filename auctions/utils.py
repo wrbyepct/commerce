@@ -3,6 +3,7 @@ import re
 import requests
 from dotenv import load_dotenv
 import os
+# from .models import AuctionListing
 
 load_dotenv()
 UPSPLASH_API_KEY = os.getenv('UNSPLASH_API_KEY')
@@ -65,3 +66,7 @@ def get_unsplash_img_url(query):
         return first_image_url
     else:
         return None
+
+# def get_highest_none_null_bid_price(listing_id):
+#     listing = AuctionListing.objects.get(id=listing)
+#     return listing.bids.all().order_by('-price').first()

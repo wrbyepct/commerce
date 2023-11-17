@@ -8,13 +8,17 @@
     
     <div class="container mt-5">
         <table class="table table-bordered ">
-            <thead class="thead-dark">
+
+            <!-- Table Head -->
+            <thead class=" table-dark ">
                 <tr>
                     <th scope="col">Bidder</th>
                     <th scope="col">Bid Price</th>
                     <th scope="col">Placed Time</th>
                 </tr>
             </thead>
+
+            <!-- Table Body -->
             <tbody >
                 
                 {% for bid in bids %}
@@ -22,13 +26,14 @@
                         <td>{{bid.user.username}} 
                             {% if listing.poster == bid.user %}
                                 <span class="info-tag info-tag--poster">listing poster</span>
-                            {% elif listing.winner == bid.user%} 
-                                <span class="info-tag info-tag--winner">winner</span>
                             {% endif %}
                         </td>
                         <td>${{ bid.price }} 
                             {% if listing.poster == bid.user %} 
                                 <span class="info-tag info-tag--opening-price" >opening price</span> 
+                            {% endif %}
+                            {% if listing.status == 'closed' and listing.current_bid.price == bid.price  %}
+                                <span class="info-tag info-tag--winner" >winning bid</span> 
                             {% endif %}
                         </td>
                         <td>{{ bid.updated_at }}</td>

@@ -119,6 +119,7 @@ input#id_image {
 }
 .cate-container .category-box {
   height: 20rem;
+  font-family: "Cormorant Infant", serif;
   max-width: 31.125rem;
   min-width: 25.625rem;
 }
