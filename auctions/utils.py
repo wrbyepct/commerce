@@ -1,12 +1,8 @@
 
 import re
 import requests
-from dotenv import load_dotenv
-import os
-# from .models import AuctionListing
 
-load_dotenv()
-UPSPLASH_API_KEY = os.getenv('UNSPLASH_API_KEY')
+from .constants import UPSPLASH_API_KEY
 
 
 def print_normal_message(obj_text):
@@ -18,7 +14,6 @@ def print_normal_message(obj_text):
 def print_error_message(obj_text):
     print('!!!!!!!!!!!!!!!!')
     print(obj_text)
-    
     
     
 def integrity_check(func):
@@ -67,6 +62,3 @@ def get_unsplash_img_url(query):
     else:
         return None
 
-# def get_highest_none_null_bid_price(listing_id):
-#     listing = AuctionListing.objects.get(id=listing)
-#     return listing.bids.all().order_by('-price').first()

@@ -70,8 +70,11 @@
                 
             {% endfor %}  
         {% else %}
-            <h2>Your watchlist is empty</h2>
-            <h4>Let's go and add some!</h4>
+            <div class="text-center mt-3">
+                <h2>Currently Empty</h2>
+                <h4>Let's go and add some!</h4>
+            </div>
+            
         {% endif %}
     </div>
 {% endblock %}

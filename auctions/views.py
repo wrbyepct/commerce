@@ -25,7 +25,8 @@ from .constants import *
 
 def index(request):
     listings = AuctionListing.objects.filter(status='open').order_by('-updated_at')
-       
+    
+
     return render(request, "auctions/index.html", {"listings": listings})
 
 
@@ -57,42 +58,103 @@ def logout_view(request):
 def register(request):
     if request.method == "POST":
         
-        username = request.POST["username"]
-        email = request.POST["email"]
-        birthday = request.POST["birthday"]
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            email = form.cleaned_data["email"]
+            birthday = form.cleaned_data["birthday"]
+            print_error_message(birthday)
 
-        # Ensure password matches confirmation
-        password = request.POST["password1"]
-        confirmation = request.POST["password2"]
-        
-        if password != confirmation:
-            return render(request, "auctions/register.html", {
-                "message": "Passwords must match."
-            })
+            # Ensure password matches confirmation
+            password = form.cleaned_data["password1"]
+            confirmation = form.cleaned_data["password2"]
+            
+            if password != confirmation:
+                return render(request, "auctions/register.html", {
+                    "message": "Passwords must match."
+                })
 
-        # Attempt to create new user
-        try:
-            user = User.objects.create_user(
-                username=username, 
-                email=email, 
-                password=password,
-            )
+            # Attempt to create new user
+            try:
+                user = User.objects.create_user(
+                    username=username, 
+                    email=email, 
+                    password=password,
+                    birthday=birthday
+                )
+                login(request, user)
+                return HttpResponseRedirect(reverse("index"))
+                
+            except IntegrityError:
+                form = CustomUserCreationForm(request.POST)
+                return render(request, "auctions/register.html", {
+                    "message": "Username already taken.",
+                    "form": form
+                })
+        else:
             
-        except IntegrityError:
-            form = CustomUserCreationForm(request.POST)
+            # Extract only the very first error message
+            for field in form:
+                if field.errors:
+                    error_message = next(iter(field.errors))
+                    break
+                
             return render(request, "auctions/register.html", {
-                "message": "Username already taken.",
-                "form": form
-            })
-            
-        user.birthday = birthday # Is empty string if leave unfilled
-        user.save()    
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
-   
+                    "message": error_message,
+                    "form": form
+                })
+    
+    # GET method            
     else:
         register_form = CustomUserCreationForm()
         return render(request, "auctions/register.html", {"form": register_form })
+
+
+
+def listing_page(request, listing_id):
+    """
+    Actions:
+        1. Save current page listing id where the user is currently at.
+        2. Provide:
+            1. Listing instance
+            2. Minimal bid for frotend(min attr) & backend(cleaned data) check
+            3. Comment empty form 
+            4. All commnets of this listing.
+    """
+   
+    
+    # Save listing ID in user session for later use.(Comment, close, place, show bid etc.)
+    request.session['current_page_listing'] = listing_id
+        
+    # Listing instance 
+    listing = AuctionListing.objects.get(id=listing_id)
+    
+    # Ensure the when user get deleted, the listing still update to highest existing bid
+    if listing.current_bid is None:
+        highest_bid = Bid.objects.filter(auction_listing=listing).order_by('-price').first()
+        listing.current_bid = highest_bid
+        listing.save()
+    
+    # Provide minimal bid
+    minimal_bid = listing.current_bid.price + Decimal('0.01')
+    
+    place_bid_form = PlaceBidForm(custom_min_value=minimal_bid)
+    
+    comment_form = CommentForm()
+    comments = listing.comments.all().order_by('-created_at')
+
+    total_bids = listing.bids.count()
+    return render(
+        request, 
+        'auctions/listing.html', 
+        {
+            'listing': listing,
+            'place_bid_form': place_bid_form,
+            'comment_form': comment_form,
+            'comments': comments,
+            'total_bids': total_bids
+        })
+    
 
 
 @login_required
@@ -215,43 +277,6 @@ def my_postings(request):
     return render(request, 'auctions/my_postings.html', {'listings': listings})
     
 
-def listing_page(request, listing_id):
-    """
-    Actions:
-        1. Save current page listing id where the user is currently at.
-        2. Provide:
-            1. Listing instance
-            2. Minimal bid for frotend(min attr) & backend(cleaned data) check
-            3. Comment empty form 
-            4. All commnets of this listing.
-    """
-    # Save listing ID in user session for later use.(Comment, close, place, show bid etc.)
-    
-    request.session['current_page_listing'] = listing_id
-        
-    # Listing instance 
-    listing = AuctionListing.objects.get(id=listing_id)
-    
-    # Provide minimal bid
-    minimal_bid = listing.current_bid.price + Decimal('0.01')
-    
-    place_bid_form = PlaceBidForm(custom_min_value=minimal_bid)
-    
-    comment_form = CommentForm()
-    comments = listing.comments.all().order_by('-created_at')
-
-    total_bids = listing.bids.count()
-    return render(
-        request, 
-        'auctions/listing.html', 
-        {
-            'listing': listing,
-            'place_bid_form': place_bid_form,
-            'comment_form': comment_form,
-            'comments': comments,
-            'total_bids': total_bids
-        })
-    
 
 @login_required
 @require_POST

@@ -13,7 +13,7 @@ class User(AbstractUser):
     watchlist = models.ManyToManyField('AuctionListing', blank=True, related_name='watchers')
     
     def __str__(self):
-        return f"User info: Username: {self.username}, email: {self.email}, birthday: {self.birthday}"
+        return f"User info: Username: {self.username}, email: {self.email}"
     
 
 class Category(models.Model):

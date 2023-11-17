@@ -24,11 +24,10 @@
             </div>
 
             <!-- Wrong credential message -->
-                <div class="text-center py-3" style="color: rgb(246, 99, 99);">
-                    {% if message %}
-                        {{ message }}
-                    {% endif %}
-                </div>
+            <div class="text-center py-3" style="color: rgb(246, 99, 99);">
+                {{ message }}
+            </div>
+            
 
             <!-- Login form -->
             <form class="credential-section--form w-50 m-auto" action="{% url 'login' %}" method="post">

@@ -51,13 +51,17 @@
                                             
                                             <p class="description">{{listing.description}}</p>
                                             <div><span>Current bid: </span></div>
-                                            <div class="d-flex flex-row align-items-start pricing-box">
-                                                {% with price=listing.current_bid.price|split_integer_and_decimal %}
-                                                    <strong>$</strong>
-                                                    <span class="price-integer">{{ price.0|intcomma }}</span>
-                                                    <span>{{ price.1 }}</span>
-                                                {% endwith %}
-                                            </div>
+                                            {% if listing.current_bid is None %}
+                                                <div>Price Updating...</div>
+                                            {% else %}
+                                                <div class="d-flex flex-row align-items-start pricing-box">
+                                                    {% with price=listing.current_bid.price|split_integer_and_decimal %}
+                                                        <strong>$</strong>
+                                                        <span class="price-integer">{{ price.0|intcomma }}</span>
+                                                        <span>{{ price.1 }}</span>
+                                                    {% endwith %}
+                                                </div>
+                                            {% endif %}
                                             
                                         </div>
                 

@@ -44,7 +44,7 @@ Your password can’t be entirely numeric."""})
         required=False
     )
     
-    required_css_class = 'required'
+    # required_css_class = 'required'
     
     class Meta(UserCreationForm.Meta):
         model = User
