@@ -1,0 +1,5 @@
+
+Django==4.2.6
+django-livereload-server==0.4
+humanfriendly==10.0
+
