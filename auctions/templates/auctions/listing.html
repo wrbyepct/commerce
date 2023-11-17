@@ -82,7 +82,7 @@
                 {% with price=listing.current_bid.price|split_integer_and_decimal %}
                     <div class="d-flex pricing-box pb-5">
                         <span>$</span>
-                        <span class="price-integer">{{ price.0 }}</span>
+                        <span class="price-integer">{{ price.0|intcomma }}</span>
                         <span>{{price.1}}</span>
                     </div>
                 {% endwith %}
@@ -106,7 +106,7 @@
             {% with price=listing.current_bid.price|split_integer_and_decimal %}
                 <div class="d-flex pricing-box mb-5">
                     <span>$</span>
-                    <span class="price-integer">{{ price.0 }}</span>
+                    <span class="price-integer">{{ price.0|intcomma }}</span>
                     <span>{{price.1}}</span>
                 </div>
             {% endwith %}
@@ -306,7 +306,7 @@
                                     
                                 </div>
                             </div> 
-
+                            <!-- Comment Dropdown toggle -->
                             <div class="dropdown dropdown--comment-actions">
                                 <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                 </button>

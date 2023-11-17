@@ -29,11 +29,11 @@
             {% csrf_token %}
             <div class="container d-flex gap-3 flex-wrap-reverse align-items-end">
                 <!-- Image Section  -->
-                <div id="dropArea" >
+                <div class="d-flex flex-column align-items-center " id="dropArea" >
                     <div id="dragArea">
                         {{ form.image }}  <!-- Currently hidden -->
                         <!-- label with the image id will take up its function -->
-                        <div class="d-flex flex-column align-items-center">
+                        <div class="d-flex flex-column align-items-center ">
                             <label id="imageLabel" for="{{ form.image.id_for_label }}">
                                 <span>Upload Image</span>
                             </label>

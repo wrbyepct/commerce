@@ -87,7 +87,7 @@
                         
                             <span 
                                 id="watchlist-counter" 
-                                class="watchlist-counter {% if user.watchlist.count == 0 %}no-show{% endif %}">
+                                class="watchlist-counter {% if user.watchlist.count == 0 %}d-none{% endif %}">
                                 {{ user.watchlist.count }}
                             </span>
                             

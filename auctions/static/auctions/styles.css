@@ -268,7 +268,7 @@ input#id_image {
   font-family: Georgia, times new roman, Times, serif;
   font-size: 2.5rem;
   font-style: italic;
-  width: 80%;
+  width: 90%;
 }
 .listing-info {
   border-bottom: 1px solid rgb(183, 183, 183);
@@ -526,8 +526,14 @@ input#id_image {
 .card-box:hover {
   transform: scale(1.03);
 }
+.card-box-title {
+  font-family: Georgia, times new roman, Times, serif;
+  font-size: 1.35rem;
+  color: #74777b;
+  font-weight: 600;
+}
 .card-box .listing-img-box {
-  height: 60%;
+  height: 50%;
 }
 .card-box .listing-img-box .listing-img {
   max-width: 100%;

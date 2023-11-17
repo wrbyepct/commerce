@@ -93,8 +93,14 @@
     &:hover {
         transform: scale(1.03);
     }
+    &-title{
+        font-family: Georgia,times new roman,Times,serif;
+        font-size: 1.35rem;
+        color: #74777b;
+        font-weight: 600;
+    }
     .listing-img-box {
-        height: 60%;
+        height: 50%;
         .listing-img {
             max-width: 100%;
             max-height: 100%;
