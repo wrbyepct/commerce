@@ -171,6 +171,7 @@ def create_listing(request):
         """
         form = NewListingForm(request.POST, request.FILES)
         
+        
         if form.is_valid():
             category = form.cleaned_data['category']
             
@@ -178,18 +179,18 @@ def create_listing(request):
             
             listing.category = category
             
-            user = request.user
             # Save posting user
-            listing.poster = user
+            listing.poster = request.user
+            
             # Save listing while checking for integrity error(title, poster, category has to be unique)
             res = listing.save(failed_message=LISTING_NOT_UNIQUE)
             
             if res['status'] == 'failed':
                 messages.error(request, res['failed_message'])  
-            
+            # Success -> Create & save bid 
             else:    
     
-                # Create & save bid 
+                
                 bid = Bid.objects.create(
                     auction_listing=listing,
                     price=form.cleaned_data['starting_bid'],
@@ -201,16 +202,20 @@ def create_listing(request):
                 listing.save()
                 messages.success(request=request, message="Listing posted successfully!")
                 return redirect('index')
-            
+        
+        # Handle form's invalid
+        # Access the error messages 
         else:
-            # Handle form's invalid
-            ## Access the error messages 
-            error_messages = form.errors.as_text()
+            for field in form:
+                if field.errors:
+                    error_messages = next(iter(field.errors))
+                    
             messages.error(request, error_messages)
-            
+        
+    # GET
+    # return an empty form     
     else:
-        # GET
-        # ## return an empty form 
+        
         form = NewListingForm()
     
     return render(request, 'auctions/create_listing.html', {'form': form})
