@@ -215,17 +215,20 @@ def create_listing(request):
     
     return render(request, 'auctions/create_listing.html', {'form': form})
 
-
+@require_GET
 def categories(request):
     query = request.GET.get('category')
     
-    if query is None: # Meaning the user is requesting categories page that shows all cates
+    # Meaning the user is requesting categories page that shows all cates
+    if query is None: 
         categories = Category.objects.all().order_by('-id')
         
         # Get img url for each category name if url does not exist
         for category in categories:
             if category.img_url == "" or not category.img_url:
                 url = get_unsplash_img_url(category)
+                if url is None:
+                    url = 'images/no_images.png'
                 category.img_url = url
                 category.save()       
         
@@ -235,7 +238,6 @@ def categories(request):
     category = Category.objects.get(name=query)
     listings = AuctionListing.objects.filter(category=category, status='open')
     return render(request, 'auctions/index.html', {'listings': listings})
-
 
 
 @require_GET
@@ -444,7 +446,7 @@ def post_comment(request):
     else:
         messages.error(request, form.errors.as_text())
         
-    return redirect(reverse('listing', args=[listing_id]))
+    return redirect(reverse('listing', args=[listing_id]) + '#bottom')
 
 
 @login_required
@@ -506,5 +508,5 @@ def save_changed_comment(request, comment_id):
     else:
         messages.error(request, 'comment form is NOT valid') 
             
-    return redirect(reverse('listing', args=[listing_id]))
+    return redirect(reverse('listing', args=[listing_id]) + '#bottom')
     

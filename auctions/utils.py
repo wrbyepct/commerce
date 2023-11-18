@@ -2,7 +2,7 @@
 import re
 import requests
 from django.db import IntegrityError
-from .constants import UPSPLASH_API_KEY
+from .constants import UNSPLASH_API_KEY
 
 
 def print_normal_message(obj_text):
@@ -49,7 +49,7 @@ def get_unsplash_img_url(query):
     url = 'https://api.unsplash.com/search/photos'
     params = {
         'query': query,
-        'client_id': UPSPLASH_API_KEY,
+        'client_id': UNSPLASH_API_KEY,
         'per_page': 1
     }
     res = requests.get(url, params=params)
@@ -58,5 +58,7 @@ def get_unsplash_img_url(query):
         first_image_url = data['results'][0]['urls']['regular']
         return first_image_url
     else:
+        print_error_message(res.status_code)
+        print_error_message(res.text)
         return None
 
