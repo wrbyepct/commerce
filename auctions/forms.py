@@ -118,7 +118,6 @@ class NewListingForm(forms.ModelForm):
         self.fields['category'].required = False
         
             
-
 class PlaceBidForm(forms.ModelForm):
     class Meta:
         model = Bid

@@ -1,7 +1,7 @@
 
 import re
 import requests
-
+from django.db import IntegrityError
 from .constants import UPSPLASH_API_KEY
 
 
@@ -17,8 +17,6 @@ def print_error_message(obj_text):
     
     
 def integrity_check(func):
-    from django.db import IntegrityError
-    
     def wrapper(instance, *args, **kwargs):
         message = kwargs.pop('failed_message', "An Integrity Error occurred")
         try:

@@ -15,7 +15,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 
 from decimal import Decimal
-import json
 
 from .models import User, AuctionListing, Bid, Category, Comment
 from .forms import CustomUserCreationForm, NewListingForm, PlaceBidForm, CommentForm
@@ -25,7 +24,6 @@ from .constants import *
 
 def index(request):
     listings = AuctionListing.objects.filter(status='open').order_by('-updated_at')
-    
 
     return render(request, "auctions/index.html", {"listings": listings})
 
@@ -110,7 +108,7 @@ def register(request):
         return render(request, "auctions/register.html", {"form": register_form })
 
 
-
+@require_GET
 def listing_page(request, listing_id):
     """
     Actions:
@@ -122,7 +120,6 @@ def listing_page(request, listing_id):
             4. All commnets of this listing.
     """
    
-    
     # Save listing ID in user session for later use.(Comment, close, place, show bid etc.)
     request.session['current_page_listing'] = listing_id
         
@@ -155,7 +152,6 @@ def listing_page(request, listing_id):
             'total_bids': total_bids
         })
     
-
 
 @login_required
 def create_listing(request):
@@ -277,7 +273,6 @@ def my_postings(request):
     return render(request, 'auctions/my_postings.html', {'listings': listings})
     
 
-
 @login_required
 @require_POST
 def place_bid(request):
@@ -289,6 +284,8 @@ def place_bid(request):
     
     listing = AuctionListing.objects.get(id=listing_id)
     
+    # Use the coustom minimal bid value to help check if the the bid placed is higher the acutal current bid value 
+    # and not tampered by user
     minimal_bid = listing.current_bid.price + Decimal('0.01')
     form = PlaceBidForm(request.POST, custom_min_value=minimal_bid)
     
@@ -296,7 +293,7 @@ def place_bid(request):
         
         bid = form.cleaned_data['price']
         
-        # Save the new bid 
+        # Save the new bid first
         new_bid = Bid.objects.create(
             auction_listing = listing,
             user = request.user,
@@ -304,14 +301,21 @@ def place_bid(request):
         )
         new_bid.save()
         
-        # update the listing current bid 
+        # Update the listing current bid 
         listing.current_bid= new_bid
         listing.save()
         
-        messages.success(request, f'Placed bid successfully! Your bid: {bid}')
+        messages.success(request, f'Bide placed successfully!')
         return redirect(reverse('listing', args=[listing_id]))
+    # Form not valid, display error messages
+    
     else:
-        messages.error(request, f"Not valid form: {form.errors.as_text()}")
+        for field in form:
+            if field.errors:
+                error_message = next(iter(field.errors))
+                break
+                
+        messages.error(request, error_message)
         return redirect(reverse('listing', args=[listing_id]))
 
 
@@ -472,9 +476,12 @@ def delete_comment(request, comment_id):
 @login_required
 @require_POST
 def save_changed_comment(request, comment_id):
-    
-    
-    
+    """
+    Required:
+        1. Listing ID -> for redirect
+        2. Comment ID -> for saving changes
+        3. Valid comment form 
+    """
     listing_id = request.session.get('current_page_listing')
     if listing_id is None:
         return HttpResponseForbidden("The lisitng ID has somehow lost.")
