@@ -85,18 +85,17 @@ class NewListingForm(forms.ModelForm):
     )
     
     def clean_category(self):
-        # Check for valid new cate
+        # Check for valid new cate input: empty string or a english word
         new_cate = self.cleaned_data['new_category'].lower().strip()
         if not only_contains_word_or_empty_string(new_cate):
             raise ValidationError('The category must only contain alphabetic characters without space.')
         
-        # Check if the name has already existed
+        # If user wish to create a new category
         if new_cate != "":
+            # Get image for new category & save it
             try:
-                if Category.objects.filter(name=new_cate).exists():
-                    raise ValidationError('The same category name has already existed')
-                # Get Unsplash Image for new category 
-            
+                
+                # Get Unsplash Image for new category    
                 url = get_unsplash_img_url(new_cate)
                 
                 if url is None:
