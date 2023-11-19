@@ -110,15 +110,7 @@ def register(request):
 
 @require_GET
 def listing_page(request, listing_id):
-    """
-    Actions:
-        1. Save current page listing id where the user is currently at.
-        2. Provide:
-            1. Listing instance
-            2. Minimal bid for frotend(min attr) & backend(cleaned data) check
-            3. Comment empty form 
-            4. All commnets of this listing.
-    """
+   
    
     # Save listing ID in user session for later use.(Comment, close, place, show bid etc.)
     request.session['current_page_listing'] = listing_id
@@ -157,18 +149,7 @@ def listing_page(request, listing_id):
 def create_listing(request):
     
     if request.method == 'POST':
-        """
-        Conditions:
-            Required:
-                1. title(text, 255↓) => Handle 
-                2. description(text)
-                3. user(User instance)
-                4. category(Category instance): existing one, 
-                Optional:
-                    1. image(nullable)
-            Actions:
-                1. Save new listing 
-        """
+        
         form = NewListingForm(request.POST, request.FILES)
         
         
@@ -395,10 +376,7 @@ def close_auction(request):
 @login_required
 @require_POST
 def cancel_auction(request):
-    """
-    Required:
-        1. Current page lisitng 
-    """
+    
     listing_id = request.session.get('current_page_listing')
     if listing_id is None:
         return HttpResponseForbidden('Listing ID is somehow None')

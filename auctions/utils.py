@@ -3,7 +3,7 @@ import re
 import requests
 from django.db import IntegrityError
 from .constants import UNSPLASH_API_KEY
-
+from django.core.exceptions import ValidationError
 
 def print_normal_message(obj_text):
     print('################')
@@ -62,3 +62,8 @@ def get_unsplash_img_url(query):
         print_error_message(res.text)
         return None
 
+
+from datetime import datetime, timedelta
+def validate_date(value):
+    if value > datetime.now().date() - timedelta(days=365*10):
+        raise ValidationError('Make sure you are at least 10 years old')
