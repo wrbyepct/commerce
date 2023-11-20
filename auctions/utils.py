@@ -64,6 +64,6 @@ def get_unsplash_img_url(query):
 
 
 from datetime import datetime, timedelta
-def validate_date(value):
+def validate_birthday(value):
     if value > datetime.now().date() - timedelta(days=365*10):
         raise ValidationError('Make sure you are at least 10 years old')

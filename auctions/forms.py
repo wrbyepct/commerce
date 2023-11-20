@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 
 import decimal
 from .models import User, AuctionListing, Category, Bid, Comment
-from .utils import only_contains_word_or_empty_string, get_unsplash_img_url, validate_date
+from .utils import only_contains_word_or_empty_string, get_unsplash_img_url, validate_birthday
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
@@ -42,7 +42,7 @@ Your password can’t be entirely numeric."""})
                 'title': 'Pick your birth date from the calendar or type it in YYYY-MM-DD format.'
             }),
         required=False,
-        validators=[validate_date]
+        validators=[validate_birthday]
     )
     
     # required_css_class = 'required'

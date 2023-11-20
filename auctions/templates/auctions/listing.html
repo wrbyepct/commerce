@@ -135,7 +135,7 @@
             </div>
             
             <!-- Placing bid -->
-            {% if user.is_authenticated and listing.poster != user %}
+            {% if user.is_authenticated and listing.poster != user and listing.status == 'open' %}
                 <!-- User only(Not poster)  -->
                 <div class="user-container mt-3">
                     <div class="bid-box">
@@ -214,7 +214,7 @@
             </div>
 
             <!-- Winnder container -->
-            {% if listing.winner and listing.winner == user and list %}
+            {% if listing.winner and listing.winner == user %}
                 <div class="text-center mt-4">
                     <h4 class="congrats">Congratulations 🎉</h4>
                     <strong>You won the bid!</strong>

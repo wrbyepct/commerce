@@ -8,7 +8,7 @@ from django.core.validators import MinValueValidator, MinLengthValidator
 from .utils import integrity_check
 
 class User(AbstractUser):
-    """User model with additional birthday field."""
+    """User model with additional birthday and watchlist fields."""
     birthday = models.DateField(null=True, blank=True)
     watchlist = models.ManyToManyField('AuctionListing', blank=True, related_name='watchers')
     
@@ -31,7 +31,7 @@ class AuctionListing(models.Model):
     """Model for auction listings."""
     poster = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     
-    winner = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    winner = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -56,13 +56,12 @@ class AuctionListing(models.Model):
 Cateogry: {self.category.name}   
 
 """
-    
+
     @integrity_check
     def save(self, *args, **kwargs):
         super().save( *args, **kwargs)
     
    
-
 class Bid(models.Model):
     """Model for bids on auction listings."""
     auction_listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="bids")
