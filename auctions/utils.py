@@ -5,6 +5,8 @@ from django.db import IntegrityError
 from .constants import UNSPLASH_API_KEY
 from django.core.exceptions import ValidationError
 
+## boohoo
+
 def print_normal_message(obj_text):
     print('################')
     print(obj_text)
