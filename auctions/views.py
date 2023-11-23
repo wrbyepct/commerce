@@ -146,6 +146,17 @@ def listing_page(request, listing_id):
     
 
 @login_required
+@require_GET
+def my_bids(request):
+    
+    user = request.user
+    bids = Bid.objects.filter(user=user).order_by('-created_at')
+    listings_bid_on = set([bid.auction_listing for bid in bids ])
+    listings_bid_on_not_owned = [ listing for listing in listings_bid_on if listing.poster != user ]    
+    
+    return render(request, 'auctions/mybids.html', {'listings': listings_bid_on_not_owned})
+
+@login_required
 def create_listing(request):
     
     if request.method == 'POST':

@@ -55,20 +55,6 @@
                                 <div class="listing-status-time">Created at: {{ listing.created_at|naturalday }}</div>
                             </div>
 
-                            <!-- <div class="myposting-cancel">
-                                <form action="" method="post">
-                                    {% csrf_token %}
-                                    <button
-                                        class="btn btn-outline-danger"
-                                        type="submit"
-                                        arial-label="cancel-auction"
-                                        data-listing-id = "{{ listing.id }}"
-                                    >
-                                        <i class="bi bi-x-circle"></i>
-                                        <span>Cancel</span>
-                                    </button>
-                                </form>
-                            </div> -->
                             {% if listing.status == 'closed' %}
                                 <div>Winner of the bid: <strong style="font-size: 1.25rem;">{{listing.winner.username}}</strong></div>
                             {% elif listing.status == 'cancelled' %}

@@ -12,4 +12,7 @@ def split_integer_and_decimal(value):
     except (ValueError, ZeroDivisionError):
         return None
     
-
+@register.simple_tag
+def get_highest_user_bid(listing, user):
+    
+    return listing.bids.filter(user=user).order_by('-price').first() # highest user bid

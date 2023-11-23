@@ -1,0 +1,97 @@
+{% extends 'auctions/layout.html' %}
+
+{% load static %}
+
+{% load humanize %}
+
+{% load custom_filters %}
+
+{% block head %}
+    <script type="module" src="{% static 'script/index.js' %}"></script> 
+    <meta name="csrf-token" content="{{ csrf_token }}">  
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex">
+        <h2 class="mx-auto">My Bids</h2>
+    </div>
+    
+    <!-- Message Section -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show">
+                {{ message }}
+                                      <!-- Bootstrap class and script for dismiss button -->
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- All Listings -->
+    <div class="container">
+        {% if listings %}
+            
+                <div class="row gx-3 gy-5 justify-content-center">
+                    {% for listing in listings %}
+                        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3">
+                            <div class="listing card d-flex justify-content-between card-box">
+                                <!-- Card   -->
+                                <a class="listing-img-box h-100 d-flex flex-column" href="{% url 'listing' listing.id %}">
+                                    <!-- Immage -->
+                                    <!-- Ensure the onerror function at src will call only once, in case the fallback image is also lost -->
+                                    <img 
+                                        src="{% if listing.image %}{{ listing.image.url }}{% else %}{% static 'images/no_image.png' %}{% endif %}" 
+                                        alt="{{ listing.description }}"
+                                        onerror="this.onerror=null; this.src=`{% static 'images/no_image.png' %}`;" 
+                                    >
+                                    <!-- Product info  -->
+                                    <div class="product-info p-3">
+                                        <h4 class="card-box-title">{{listing.title}}</h4>
+                                        
+                                        <p class="description">{{listing.description}}</p>
+                                        
+                                    </div>
+                                    <hr class="mt-0">
+                                    <!-- Bid info -->
+                                    <div class="bid-info-container flex-grow-1 position-relative ">
+                                        <div class="d-flex justify-content-between align-items-center position-absolute bottom-0 w-100 px-3 pb-3">
+                                            <div class="current-bid">
+                                                <span>Current bid: </span>
+                                                {% if listing.current_bid is None %}
+                                                    <div>Price Updating...</div>
+                                                {% else %}
+                                                    <div class="d-flex flex-row align-items-start pricing-box">
+                                                        <strong class="fs-6">${{ listing.current_bid.price|intcomma }}</strong>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="user-highest-bid pricing-box ">
+                                                <div class="text-end">Your bid: </div>
+                                                {% get_highest_user_bid listing user as highest_bid %}
+                                                <div>
+                                                    <strong class="fs-5 
+                                                    {% if highest_bid.price < listing.current_bid.price %} 
+                                                        text-danger 
+                                                    {% else %} 
+                                                        text-success 
+                                                    {% endif %}"
+                                                    >
+                                                        ${{ highest_bid.price|intcomma }}
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}  
+                </div>
+        {% else %}
+            <div class="w-100 text-center ">
+                You have not bid on items yet!
+            </div>
+        {% endif %}
+    </div>
+    
+{% endblock %}

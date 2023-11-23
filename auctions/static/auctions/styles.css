@@ -212,10 +212,6 @@ input#id_image {
   width: 25rem;
 }
 
-.myposting-cancel i::before {
-  transform: translateY(-16%);
-}
-
 .site-title {
   font-family: "Bonheur Royale", cursive;
   font-size: 4rem;
@@ -549,4 +545,8 @@ input#id_image {
 }
 .watchlist-btn i::before {
   padding-bottom: 2px;
+}
+
+.bi-bank {
+  width: 1rem;
 }/*# sourceMappingURL=styles.css.map */
