@@ -22,6 +22,9 @@ from .utils import print_normal_message, print_error_message, get_unsplash_img_u
 
 from .constants import *
 
+
+## This is the test message
+
 def index(request):
     listings = AuctionListing.objects.filter(status='open').order_by('-updated_at')
 
