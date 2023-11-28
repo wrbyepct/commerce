@@ -424,7 +424,7 @@ def post_comment(request):
     
     if form.is_valid():
         
-        content = form.cleaned_data['content']
+        content = form.cleaned_data['content'].strip()
         listing = AuctionListing.objects.get(id=listing_id)
         user = request.user
         
